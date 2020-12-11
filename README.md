@@ -1,0 +1,2 @@
+# Templates
+dotnet new templates
