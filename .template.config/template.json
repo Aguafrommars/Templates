@@ -1,0 +1,51 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "Olivier Lefebvre",
+  "classifications": ["TheIdServer"],
+  "name": "TheIdServer",
+  "identity": "TheIdServer",
+  "shortName": "tis",
+  "tags": {
+    "language": "C#"
+  },
+  "sourceName": "TheIdServer",
+  "preferNameDirectory": true,
+  "symbols": {
+    "skipRestore": {
+      "type": "parameter",
+      "datatype": "bool",
+      "description": "Skip restore packages",
+      "defaultValue": "false"
+    }
+  },
+  "sources": [    
+    {
+      "modifiers": [
+        {
+          "exclude": [
+            ".vs/**",
+            ".git/**", 
+            "doc/**", 
+            "coverage/**", 
+            "ReportGenerator/**", 
+            "**/TestResults/**"
+          ]
+        }
+      ]
+    }    
+  ],
+  "primaryOutputs": [
+    {
+      "path": "TheIdServer.sln"
+    }
+  ],
+  "postActions": [{
+    "condition": "(!skipRestore)",
+    "description": "Restore NuGet packages required by this project.",
+    "manualInstructions": [
+      { "text": "Run 'dotnet restore'" }
+    ],
+    "actionId": "210D431B-A78B-4D2F-B762-4ED3E3EA9025",
+    "continueOnError": true
+  }]
+}
