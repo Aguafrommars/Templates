@@ -8,7 +8,7 @@
   "tags": {
     "language": "C#"
   },
-  "sourceName": "TheIdServer",
+  "sourceName": "WebApp",
   "preferNameDirectory": true,
   "symbols": {
     "skipRestore": {
@@ -36,7 +36,7 @@
   ],
   "primaryOutputs": [
     {
-      "path": "TheIdServer.sln"
+      "path": "Template.sln"
     }
   ],
   "postActions": [{

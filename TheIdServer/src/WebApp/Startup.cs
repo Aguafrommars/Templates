@@ -75,7 +75,7 @@ namespace WebApp
                 AddDefaultServices(services);
             }
 
-            ConfigureDataProtection(services);
+            services.ConfigureDataProtection(Configuration);
 
             var identityBuilder = services.AddClaimsProviders(Configuration)
                 .Configure<ForwardedHeadersOptions>(Configuration.GetSection(nameof(ForwardedHeadersOptions)))
@@ -182,7 +182,7 @@ namespace WebApp
             var disableHttps = Configuration.GetValue<bool>("DisableHttps");
             if (!isProxy)
             {
-                ConfigureInitialData(app);
+                app.ConfigureInitialData(Configuration);
             }
 
             if (Environment.IsDevelopment())
@@ -361,40 +361,6 @@ namespace WebApp
                    options => Configuration.GetSection(nameof(IdentityOptions)).Bind(options))
                .AddTheIdServerStores(configureOptions)
                .AddDefaultTokenProviders();
-        }
-
-        private void ConfigureInitialData(IApplicationBuilder app)
-        {
-            var dbType = Configuration.GetValue<DbTypes>("DbType");
-            if (Configuration.GetValue<bool>("Migrate") &&
-                dbType != DbTypes.InMemory)
-            {
-                using var scope = app.ApplicationServices.CreateScope();
-                var configContext = scope.ServiceProvider.GetRequiredService<ConfigurationDbContext>();
-                configContext.Database.Migrate();
-
-                var opContext = scope.ServiceProvider.GetRequiredService<OperationalDbContext>();
-                opContext.Database.Migrate();
-
-                var appcontext = scope.ServiceProvider.GetService<ApplicationDbContext>();
-                appcontext.Database.Migrate();
-            }
-
-            if (Configuration.GetValue<bool>("Seed"))
-            {
-                using var scope = app.ApplicationServices.CreateScope();
-                SeedData.SeedConfiguration(scope, Configuration);
-                SeedData.SeedUsers(scope, Configuration);
-            }
-
-        }
-        private void ConfigureDataProtection(IServiceCollection services)
-        {
-            var dataprotectionSection = Configuration.GetSection(nameof(DataProtectionOptions));
-            if (dataprotectionSection != null)
-            {
-                services.AddDataProtection(options => dataprotectionSection.Bind(options)).ConfigureDataProtection(Configuration.GetSection(nameof(DataProtectionOptions)));
-            }
         }
     }
 }
