@@ -1,12 +1,9 @@
 ﻿using Aguacongas.IdentityServer;
 using Aguacongas.IdentityServer.Abstractions;
-using Aguacongas.IdentityServer.Admin.Http.Store;
 using Aguacongas.IdentityServer.Admin.Options;
 using Aguacongas.IdentityServer.Admin.Services;
 using Aguacongas.IdentityServer.EntityFramework.Store;
-using Aguacongas.IdentityServer.Store;
 using Aguacongas.TheIdServer.Admin.Hubs;
-using Aguacongas.TheIdServer.BlazorApp.Infrastructure.Services;
 using Aguacongas.TheIdServer.BlazorApp.Models;
 using Aguacongas.TheIdServer.Data;
 using Aguacongas.TheIdServer.Models;
@@ -17,10 +14,8 @@ using IdentityServerHost.Quickstart.UI;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using Microsoft.AspNetCore.Components.WebAssembly.Services;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -41,7 +36,6 @@ using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using TIS.Models;
-using TIS.Services;
 using Auth = Aguacongas.TheIdServer.Authentication;
 
 namespace TIS
@@ -159,17 +153,7 @@ namespace TIS
                     .AddEntityFrameworkStore<ConfigurationDbContext>();
             }
 
-            services.AddRemoteAuthentication<RemoteAuthenticationState, RemoteUserAccount, OidcProviderOptions>();
-            services.AddScoped<LazyAssemblyLoader>()
-                 .AddScoped<AuthenticationStateProvider, RemoteAuthenticationService>()
-                 .AddScoped<SignOutSessionStateManager>()
-                 .AddScoped<ISharedStringLocalizerAsync, PreRenderStringLocalizer>()
-                 .AddTransient<IAccessTokenProvider, AccessTokenProvider>()
-                 .AddTransient<Microsoft.JSInterop.IJSRuntime, JSRuntime>()
-                 .AddTransient<IKeyStore<RsaEncryptorDescriptor>>(p => new KeyStore<RsaEncryptorDescriptor>(p.CreateApiHttpClient(p.GetRequiredService<IOptions<IdentityServerOptions>>().Value),
-                         p.GetRequiredService<ILogger<KeyStore<RsaEncryptorDescriptor>>>()))
-                 .AddTransient<IKeyStore<IAuthenticatedEncryptorDescriptor>>(p => new KeyStore<IAuthenticatedEncryptorDescriptor>(p.CreateApiHttpClient(p.GetRequiredService<IOptions<IdentityServerOptions>>().Value),
-                         p.GetRequiredService<ILogger<KeyStore<IAuthenticatedEncryptorDescriptor>>>()))
+            services.AddPrerendeingServices()
                  .AddAdminApplication(new Settings())
                  .AddDatabaseDeveloperPageExceptionFilter()
                  .AddRazorPages(options => options.Conventions.AuthorizeAreaFolder("Identity", "/Account"));
