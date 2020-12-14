@@ -6,8 +6,8 @@
     <PackageId>TheIdServer.Template</PackageId>
     <Title>TheIdServer Template</Title>
     <Authors>Olivier Lefebvre</Authors>
-    <Description>Template to create TheIdServer solution.</Description>
-    <PackageTags>dotnet-new;templates;TheIdServer</PackageTags>
+    <Description>Template to create a TheIdServer solution.</Description>
+    <PackageTags>dotnet-new;templates;theidserver;identityserver4;oidc;oauth;identity;authentication;security;iam</PackageTags>
     <TargetFramework>net5.0</TargetFramework>
 
     <IncludeContentInPack>true</IncludeContentInPack>
@@ -16,7 +16,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="TheIdServer\**\*" Exclude="TheIdServer\**\bin\**;TheIdServer\**\obj\**;TheIdServer\**\*.csproj.user;TheIdServer\**\.vs\**;TheIdServer\**\TIS.db;TheIdServer\**\update-dependencies.ps1;TheIdServer\**\update-dependencies.cmd" />
+    <Content Include="TheIdServer\**\*" Exclude="TheIdServer\**\bin\**;TheIdServer\**\obj\**;TheIdServer\**\*.csproj.user;TheIdServer\**\.vs\**;TheIdServer\**\TIS.db;TheIdServer\**\update-dependencies.ps1;TheIdServer\**\update-dependencies.cmd;TheIdServer\TheIdServer.sln.licenseheader" />
     <Compile Remove="**\*" />
   </ItemGroup>
 
