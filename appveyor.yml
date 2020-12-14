@@ -39,7 +39,7 @@ deploy:
     draft: true
     prerelease: true
     release: $(Version)
-    artifact: /.*\.zip/
+    artifact: /.*\.nupkg/
     on:
       branch: 
       - /preview\/*/
@@ -48,7 +48,7 @@ deploy:
     auth_token: $(GH_TOKEN)
     draft: true
     release: $(Version)
-    artifact: /.*\.zip/
+    artifact: /.*\.nupkg/
     on:
       branch: 
       - /release\/*/
