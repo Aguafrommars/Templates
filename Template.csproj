@@ -16,7 +16,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="TheIdServer\**\*" Exclude="src\**\bin\**;src\**\obj\**;test\**\bin\**;test\**\obj\**" />
+    <Content Include="TheIdServer\**\*" Exclude="TheIdServer\**\bin\**;TheIdServer\**\obj\**;TheIdServer\**\*.csproj.user;TheIdServer\**\.vs\**;TheIdServer\**\TIS.db;TheIdServer\**\update-dependencies.ps1;TheIdServer\**\update-dependencies.cmd" />
     <Compile Remove="**\*" />
   </ItemGroup>
 

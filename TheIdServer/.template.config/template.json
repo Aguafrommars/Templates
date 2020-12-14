@@ -1,5 +1,5 @@
 {
-  "$schema": "http://json.schemastore.org/template",
+  "$schema": "http://json.schemastore.org/TIS",
   "author": "Olivier Lefebvre",
   "classifications": ["TheIdServer"],
   "name": "TheIdServer",
@@ -8,7 +8,7 @@
   "tags": {
     "language": "C#"
   },
-  "sourceName": "Template",
+  "sourceName": "TIS",
   "preferNameDirectory": true,
   "symbols": {
     "skipRestore": {
@@ -36,7 +36,7 @@
   ],
   "primaryOutputs": [
     {
-      "path": "Template.sln"
+      "path": "TIS.sln"
     }
   ],
   "postActions": [{
