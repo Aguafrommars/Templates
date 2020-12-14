@@ -34,9 +34,6 @@ function UpdatePackages {
     return $return
 }
 
-$path = (Get-Location).Path
-Set-Location $path
-
 # get branches names
 $dest = "master"
 if (Test-Path env:DEST_BRANCH) {
