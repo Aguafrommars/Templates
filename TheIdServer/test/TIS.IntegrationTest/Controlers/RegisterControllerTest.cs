@@ -1,5 +1,5 @@
-﻿// Project: Aguafrommars/TheIdServer
-// Copyright (c) 2020 @Olivier Lefebvre
+﻿// Copyright (c) 2020 @Olivier Lefebvre. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 using Aguacongas.IdentityServer.Admin.Models;
 using IdentityServer4.Models;
 using Microsoft.Extensions.DependencyInjection;

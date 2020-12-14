@@ -1,4 +1,6 @@
-﻿using Aguacongas.TheIdServer.BlazorApp.Pages;
+﻿// Copyright (c) 2020 @Olivier Lefebvre. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+using Aguacongas.TheIdServer.BlazorApp.Pages;
 using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;

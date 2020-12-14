@@ -1,4 +1,6 @@
-﻿using Aguacongas.TheIdServer.Models;
+﻿// Copyright (c) 2020 @Olivier Lefebvre. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+using Aguacongas.TheIdServer.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
