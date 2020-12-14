@@ -1,7 +1,7 @@
 # Templates
 dotnet new templates
 
-Create a TheIdServer solution with [`dotnet new`](https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-new) cli tool.
+Create a [TheIdServer](https://github.com/Aguafrommars/TheIdServer) solution with [`dotnet new`](https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-new) cli tool.
 
 ## Install
 
