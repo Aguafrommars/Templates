@@ -166,6 +166,9 @@ namespace TIS
         {
             var isProxy = Configuration.GetValue<bool>("Proxy");
             var disableHttps = Configuration.GetValue<bool>("DisableHttps");
+
+            app.UseForwardedHeaders();
+
             if (!isProxy)
             {
                 app.ConfigureInitialData(Configuration);
