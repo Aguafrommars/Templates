@@ -1,3 +1,11 @@
+## [1.0.2](https://github.com/Aguafrommars/Templates/compare/1.0.1...1.0.2) (2021-03-01)
+
+
+### Bug Fixes
+
+* update packages ([5c2c580](https://github.com/Aguafrommars/Templates/commit/5c2c580d49a0fa46e20e11e16f49c1619a0ec8f5))
+* upgrade dependencies ([11a59f6](https://github.com/Aguafrommars/Templates/commit/11a59f61bcf57a683d70fa9caff875671e60af2d))
+
 ## [1.0.1](https://github.com/Aguafrommars/Templates/compare/1.0.0...1.0.1) (2020-12-20)
 
 
