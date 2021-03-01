@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 using Aguacongas.IdentityServer.Admin.Configuration;
 using Aguacongas.IdentityServer.EntityFramework.Store;
+using Azure.Identity;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption.ConfigurationModel;
 using Microsoft.AspNetCore.DataProtection.KeyManagement;
@@ -10,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Win32;
 using StackExchange.Redis;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Security.Cryptography.X509Certificates;
 using TIS.Models;
@@ -30,7 +32,7 @@ namespace Microsoft.Extensions.DependencyInjection
             switch (dataProtectionsOptions.StorageKind)
             {
                 case StorageKind.AzureStorage:
-                    builder.PersistKeysToAzureBlobStorage(new Uri(dataProtectionsOptions.StorageConnectionString));
+                    builder.PersistKeysToAzureBlobStorage(blobSasUri: new Uri(dataProtectionsOptions.StorageConnectionString));
                     break;
                 case StorageKind.EntityFramework:
                     builder.PersistKeysToDbContext<OperationalDbContext>();
@@ -59,10 +61,12 @@ namespace Microsoft.Extensions.DependencyInjection
                 switch (protectOptions.KeyProtectionKind)
                 {
                     case KeyProtectionKind.AzureKeyVault:
-                        builder.ProtectKeysWithAzureKeyVault(protectOptions.AzureKeyVaultKeyId, protectOptions.AzureKeyVaultClientId, protectOptions.AzureKeyVaultClientSecret);
+                        builder.ProtectKeysWithAzureKeyVault(new Uri(protectOptions.AzureKeyVaultKeyId), new DefaultAzureCredential());
                         break;
                     case KeyProtectionKind.WindowsDpApi:
+#pragma warning disable CA1416 // Validate platform compatibility
                         builder.ProtectKeysWithDpapi(protectOptions.WindowsDPAPILocalMachine);
+#pragma warning restore CA1416 // Validate platform compatibility
                         break;
                     case KeyProtectionKind.WindowsDpApiNg:
                         ConfigureWindowsDpApiNg(builder, protectOptions);
@@ -91,6 +95,7 @@ namespace Microsoft.Extensions.DependencyInjection
             }
         }
 
+        [SuppressMessage("Interoperability", "CA1416:Validate platform compatibility", Justification = "Documented")]
         private static void ConfigureWindowsDpApiNg(IDataProtectionBuilder builder, KeyProtectionOptions protectOptions)
         {
             if (!string.IsNullOrEmpty(protectOptions.WindowsDpApiNgCerticate))
