@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore.SqlServer.Infrastructure.Internal;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using Xunit;
 
 namespace Aguacongas.TheIdServer.Test
@@ -14,6 +15,7 @@ namespace Aguacongas.TheIdServer.Test
     public class DbContextOptionsBuilderExtensionsTest
     {
         [Fact]
+        [SuppressMessage("Usage", "EF1001:Internal EF Core API usage.", Justification = "for test purpose")]
         public void UseDatabaseFromConfiguration_should_add_in_memory_options()
         {
             var configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
@@ -29,6 +31,7 @@ namespace Aguacongas.TheIdServer.Test
         }
 
         [Fact]
+        [SuppressMessage("Usage", "EF1001:Internal EF Core API usage.", Justification = "For test purpose")]
         public void UseDatabaseFromConfiguration_should_add_sqlite_options()
         {
             var configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
@@ -45,6 +48,7 @@ namespace Aguacongas.TheIdServer.Test
 
 
         [Fact]
+        [SuppressMessage("Usage", "EF1001:Internal EF Core API usage.", Justification = "For test purpose")]
         public void UseDatabaseFromConfiguration_should_add_sql_server_options()
         {
             var configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
