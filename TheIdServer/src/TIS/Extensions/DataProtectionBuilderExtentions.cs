@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 using Aguacongas.IdentityServer.Admin.Configuration;
 using Aguacongas.IdentityServer.EntityFramework.Store;
+using Aguacongas.IdentityServer.KeysRotation.RavenDb;
 using Azure.Identity;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption.ConfigurationModel;
@@ -36,6 +37,9 @@ namespace Microsoft.Extensions.DependencyInjection
                     break;
                 case StorageKind.EntityFramework:
                     builder.PersistKeysToDbContext<OperationalDbContext>();
+                    break;
+                case StorageKind.RavenDb:
+                    builder.PersistKeysToRavenDb<DocumentSessionWrapper>();
                     break;
                 case StorageKind.FileSytem:
                     builder.PersistKeysToFileSystem(new DirectoryInfo(dataProtectionsOptions.StorageConnectionString));

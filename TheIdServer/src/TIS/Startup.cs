@@ -2,22 +2,27 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 using Aguacongas.IdentityServer;
 using Aguacongas.IdentityServer.Abstractions;
+using Aguacongas.IdentityServer.Admin.Http.Store;
 using Aguacongas.IdentityServer.Admin.Options;
 using Aguacongas.IdentityServer.Admin.Services;
 using Aguacongas.IdentityServer.EntityFramework.Store;
+using Aguacongas.IdentityServer.Store;
 using Aguacongas.TheIdServer.Admin.Hubs;
+using Aguacongas.TheIdServer.BlazorApp.Infrastructure.Services;
 using Aguacongas.TheIdServer.BlazorApp.Models;
+using Aguacongas.TheIdServer.BlazorApp.Services;
 using Aguacongas.TheIdServer.Data;
 using Aguacongas.TheIdServer.Models;
 using IdentityModel.AspNetCore.OAuth2Introspection;
-using IdentityServer4.AccessTokenValidation;
 using IdentityServer4.Services;
 using IdentityServerHost.Quickstart.UI;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using Microsoft.AspNetCore.Components.WebAssembly.Services;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -30,15 +35,21 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
+using Raven.Client.Documents;
 using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
+using System.Security.Cryptography.X509Certificates;
+using System.Threading.Tasks;
 using TIS.Models;
+using TIS.Services;
 using Auth = Aguacongas.TheIdServer.Authentication;
+using RavenDbStore = Aguacongas.IdentityServer.RavenDb.Store;
 
 namespace TIS
 {
@@ -47,9 +58,12 @@ namespace TIS
         public IConfiguration Configuration { get; }
         public IWebHostEnvironment Environment { get; }
 
+        public DbTypes DbType { get; }
+
         public Startup(IConfiguration configuration, IWebHostEnvironment environment)
         {
             Configuration = configuration;
+            DbType = Configuration.GetValue<DbTypes>("DbType");
             Environment = environment;
         }
 
@@ -71,7 +85,7 @@ namespace TIS
                 AddDefaultServices(services);
             }
 
-            services.ConfigureDataProtection(Configuration);
+            ConfigureDataProtection(services);
 
             var identityBuilder = services.AddClaimsProviders(Configuration)
                 .Configure<ForwardedHeadersOptions>(Configuration.GetSection(nameof(ForwardedHeadersOptions)))
@@ -128,7 +142,9 @@ namespace TIS
                 .AddAuthorization(options =>
                     options.AddIdentityServerPolicies())
                 .AddAuthentication()
-                .AddIdentityServerAuthentication(JwtBearerDefaults.AuthenticationScheme, ConfigureIdentityServerAuthenticationOptions());
+                .AddJwtBearer("Bearer", options => ConfigureIdentityServerAuthenticationOptions(options))
+                // reference tokens
+                .AddOAuth2Introspection("introspection", options => ConfigureIdentityServerAuthenticationOptions(options));
 
 
             var mvcBuilder = services.Configure<SendGridOptions>(Configuration)
@@ -149,13 +165,30 @@ namespace TIS
                 mvcBuilder.AddIdentityServerAdmin<ApplicationUser, Auth.SchemeDefinition>()
                     .AddTheIdServerHttpStore();
             }
+            else if (DbType == DbTypes.RavenDb)
+            {
+                mvcBuilder.AddIdentityServerAdmin<ApplicationUser, RavenDbStore.SchemeDefinition>()
+                    .AddRavenDbStore();
+            }
             else
             {
                 mvcBuilder.AddIdentityServerAdmin<ApplicationUser, SchemeDefinition>()
                     .AddEntityFrameworkStore<ConfigurationDbContext>();
             }
 
-            services.AddPrerendeingServices()
+            services.AddRemoteAuthentication<RemoteAuthenticationState, RemoteUserAccount, OidcProviderOptions>();
+            services.AddScoped<LazyAssemblyLoader>()
+                 .AddScoped<AuthenticationStateProvider, RemoteAuthenticationService>()
+                 .AddScoped<SignOutSessionStateManager>()
+                 .AddScoped<ISharedStringLocalizerAsync, PreRenderStringLocalizer>()
+                 .AddTransient<IReadOnlyCultureStore, ReadOnlyCultureStore>()
+                 .AddTransient<IReadOnlyLocalizedResourceStore, ReadOnlyLocalizedResourceStore>()
+                 .AddTransient<IAccessTokenProvider, AccessTokenProvider>()
+                 .AddTransient<Microsoft.JSInterop.IJSRuntime, JSRuntime>()
+                 .AddTransient<IKeyStore<RsaEncryptorDescriptor>>(p => new KeyStore<RsaEncryptorDescriptor>(p.CreateApiHttpClient(p.GetRequiredService<IOptions<IdentityServerOptions>>().Value),
+                         p.GetRequiredService<ILogger<KeyStore<RsaEncryptorDescriptor>>>()))
+                 .AddTransient<IKeyStore<IAuthenticatedEncryptorDescriptor>>(p => new KeyStore<IAuthenticatedEncryptorDescriptor>(p.CreateApiHttpClient(p.GetRequiredService<IOptions<IdentityServerOptions>>().Value),
+                         p.GetRequiredService<ILogger<KeyStore<IAuthenticatedEncryptorDescriptor>>>()))
                  .AddAdminApplication(new Settings())
                  .AddDatabaseDeveloperPageExceptionFilter()
                  .AddRazorPages(options => options.Conventions.AuthorizeAreaFolder("Identity", "/Account"));
@@ -168,10 +201,11 @@ namespace TIS
             var disableHttps = Configuration.GetValue<bool>("DisableHttps");
 
             app.UseForwardedHeaders();
+            AddForceHttpsSchemeMiddleware(app);
 
             if (!isProxy)
             {
-                app.ConfigureInitialData(Configuration);
+                ConfigureInitialData(app);
             }
 
             if (Environment.IsDevelopment())
@@ -191,6 +225,7 @@ namespace TIS
             var scope = app.ApplicationServices.CreateScope();
             var scopedProvider = scope.ServiceProvider;
             var supportedCulture = scopedProvider.GetRequiredService<ISupportCultures>().CulturesNames.ToArray();
+
 
             app.UseRequestLocalization(options =>
             {
@@ -268,65 +303,164 @@ namespace TIS
             if (isProxy)
             {
                 app.LoadDynamicAuthenticationConfiguration<Auth.SchemeDefinition>();
+                return;
             }
-            else
+            if (DbType == DbTypes.RavenDb)
             {
-                app.LoadDynamicAuthenticationConfiguration<SchemeDefinition>();
+                app.LoadDynamicAuthenticationConfiguration<RavenDbStore.SchemeDefinition>();
+                return;
+            }
+            app.LoadDynamicAuthenticationConfiguration<SchemeDefinition>();
+        }
+
+        private void AddForceHttpsSchemeMiddleware(IApplicationBuilder app)
+        {
+            var forceHttpsScheme = Configuration.GetValue<bool>("ForceHttpsScheme");
+
+            if (forceHttpsScheme)
+            {
+                app.Use((context, next) =>
+                {
+                    context.Request.Scheme = "https";
+                    return next();
+                });
             }
         }
 
-        private Action<IdentityServerAuthenticationOptions> ConfigureIdentityServerAuthenticationOptions()
+        private void ConfigureIdentityServerAuthenticationOptions(JwtBearerOptions options)
         {
-            return options =>
+            Configuration.GetSection("ApiAuthentication").Bind(options);
+            if (Configuration.GetValue<bool>("DisableStrictSsl"))
             {
-                Configuration.GetSection("ApiAuthentication").Bind(options);
-                if (Configuration.GetValue<bool>("DisableStrictSsl"))
+                options.BackchannelHttpHandler = new HttpClientHandler
                 {
-                    options.JwtBackChannelHandler = new HttpClientHandler
-                    {
 #pragma warning disable S4830 // Server certificates should be verified during SSL/TLS connections
-                        ServerCertificateCustomValidationCallback = (message, cert, chain, policy) => true
+                    ServerCertificateCustomValidationCallback = (message, cert, chain, policy) => true
 #pragma warning restore S4830 // Server certificates should be verified during SSL/TLS connections
-                    };
-                }
-
-                static string tokenRetriever(HttpRequest request)
+                };
+            }
+            options.Audience = Configuration["ApiAuthentication:ApiName"];
+            options.Events = new JwtBearerEvents
+            {
+                OnMessageReceived = context =>
                 {
+                    var request = context.HttpContext.Request;
                     var path = request.Path;
                     var accessToken = TokenRetrieval.FromQueryString()(request);
                     if (path.StartsWithSegments("/providerhub") && !string.IsNullOrEmpty(accessToken))
                     {
-                        return accessToken;
+                        context.Token = accessToken;
+                        return Task.CompletedTask;
                     }
                     var oneTimeToken = TokenRetrieval.FromQueryString("otk")(request);
                     if (!string.IsNullOrEmpty(oneTimeToken))
                     {
-                        return request.HttpContext
+                        context.Token = request.HttpContext
                             .RequestServices
                             .GetRequiredService<IRetrieveOneTimeToken>()
                             .GetOneTimeToken(oneTimeToken);
+                        return Task.CompletedTask;
                     }
-                    return TokenRetrieval.FromAuthorizationHeader()(request);
+                    context.Token = TokenRetrieval.FromAuthorizationHeader()(request);
+                    return Task.CompletedTask;
+                }
+            };
+
+            options.ForwardDefaultSelector = context =>
+            {
+                var authHeader = context.Request.Headers[HttpRequestHeader.Authorization.ToString()];
+                if (string.IsNullOrEmpty(authHeader))
+                {
+                    return null;
                 }
 
-                options.TokenRetriever = tokenRetriever;
+                var parts = authHeader.First().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                if (parts.Length != 2)
+                {
+                    return null;
+                }
+
+                if (!parts[1].Contains("."))
+                {
+                    return "introspection";
+                }
+
+                return null;
             };
+        }
+
+        private void ConfigureIdentityServerAuthenticationOptions(OAuth2IntrospectionOptions options)
+        {
+            Configuration.GetSection("ApiAuthentication").Bind(options);
+            options.ClientId = Configuration.GetValue<string>("ApiAuthentication:ApiName");
+            options.ClientSecret = Configuration.GetValue<string>("ApiAuthentication:ApiSecret");
+            static string tokenRetriever(HttpRequest request)
+            {
+                var path = request.Path;
+                var accessToken = TokenRetrieval.FromQueryString()(request);
+                if (path.StartsWithSegments("/providerhub") && !string.IsNullOrEmpty(accessToken))
+                {
+                    return accessToken;
+                }
+                var oneTimeToken = TokenRetrieval.FromQueryString("otk")(request);
+                if (!string.IsNullOrEmpty(oneTimeToken))
+                {
+                    return request.HttpContext
+                        .RequestServices
+                        .GetRequiredService<IRetrieveOneTimeToken>()
+                        .GetOneTimeToken(oneTimeToken);
+                }
+                return TokenRetrieval.FromAuthorizationHeader()(request);
+            }
+
+            options.TokenRetriever = tokenRetriever;
         }
 
         private void AddDefaultServices(IServiceCollection services)
         {
             services.Configure<IdentityServerOptions>(options => Configuration.GetSection("ApiAuthentication").Bind(options))
-                .AddTransient<ISchemeChangeSubscriber, SchemeChangeSubscriber<SchemeDefinition>>()
-                .AddDbContext<ApplicationDbContext>(options => options.UseDatabaseFromConfiguration(Configuration))
-                .AddIdentityServer4AdminEntityFrameworkStores<ApplicationUser, ApplicationDbContext>()
-                .AddConfigurationEntityFrameworkStores(options => options.UseDatabaseFromConfiguration(Configuration))
-                .AddOperationalEntityFrameworkStores(options => options.UseDatabaseFromConfiguration(Configuration))
                 .AddIdentityProviderStore();
 
-            services.AddIdentity<ApplicationUser, IdentityRole>(
+            var identityBuilder = services.AddIdentity<ApplicationUser, IdentityRole>(
                     options => Configuration.GetSection(nameof(IdentityOptions)).Bind(options))
-                .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
+
+            if (DbType == DbTypes.RavenDb)
+            {
+                services.Configure<RavenDbOptions>(options => Configuration.GetSection(nameof(RavenDbOptions)).Bind(options))
+                    .AddSingleton(p =>
+                    {
+                        var options = p.GetRequiredService<IOptions<RavenDbOptions>>().Value;
+                        var documentStore = new DocumentStore
+                        {
+                            Urls = options.Urls,
+                            Database = options.Database,
+                        };
+                        if (!string.IsNullOrWhiteSpace(options.CertificatePath))
+                        {
+                            documentStore.Certificate = new X509Certificate2(options.CertificatePath, options.CertificatePassword);
+                        }
+                        documentStore.SetFindIdentityPropertyForIdentityServerStores();
+                        return documentStore.Initialize();
+                    })
+                    .AddTransient<ISchemeChangeSubscriber, SchemeChangeSubscriber<RavenDbStore.SchemeDefinition>>()
+                    .AddIdentityServer4AdminRavenDbkStores<ApplicationUser>()
+                    .AddConfigurationRavenDbkStores()
+                    .AddOperationalRavenDbStores();
+
+                identityBuilder.AddRavenDbStores();
+            }
+            else
+            {
+                services.AddTransient<ISchemeChangeSubscriber, SchemeChangeSubscriber<SchemeDefinition>>()
+                    .AddDbContext<ApplicationDbContext>(options => options.UseDatabaseFromConfiguration(Configuration))
+                    .AddIdentityServer4AdminEntityFrameworkStores<ApplicationUser, ApplicationDbContext>()
+                    .AddConfigurationEntityFrameworkStores(options => options.UseDatabaseFromConfiguration(Configuration))
+                    .AddOperationalEntityFrameworkStores(options => options.UseDatabaseFromConfiguration(Configuration));
+
+                identityBuilder.AddEntityFrameworkStores<ApplicationDbContext>();
+            }
+
 
             var signalRBuilder = services.AddSignalR(options => Configuration.GetSection("SignalR:HubOptions").Bind(options));
             if (Configuration.GetValue<bool>("SignalR:UseMessagePack"))
@@ -350,6 +484,40 @@ namespace TIS
                    options => Configuration.GetSection(nameof(IdentityOptions)).Bind(options))
                .AddTheIdServerStores(configureOptions)
                .AddDefaultTokenProviders();
+        }
+
+        private void ConfigureInitialData(IApplicationBuilder app)
+        {
+            var dbType = Configuration.GetValue<DbTypes>("DbType");
+            if (Configuration.GetValue<bool>("Migrate") &&
+                dbType != DbTypes.InMemory && dbType != DbTypes.RavenDb)
+            {
+                using var scope = app.ApplicationServices.CreateScope();
+                var configContext = scope.ServiceProvider.GetRequiredService<ConfigurationDbContext>();
+                configContext.Database.Migrate();
+
+                var opContext = scope.ServiceProvider.GetRequiredService<OperationalDbContext>();
+                opContext.Database.Migrate();
+
+                var appcontext = scope.ServiceProvider.GetService<ApplicationDbContext>();
+                appcontext.Database.Migrate();
+            }
+
+            if (Configuration.GetValue<bool>("Seed"))
+            {
+                using var scope = app.ApplicationServices.CreateScope();
+                SeedData.SeedConfiguration(scope, Configuration);
+                SeedData.SeedUsers(scope, Configuration);
+            }
+
+        }
+        private void ConfigureDataProtection(IServiceCollection services)
+        {
+            var dataprotectionSection = Configuration.GetSection(nameof(DataProtectionOptions));
+            if (dataprotectionSection != null)
+            {
+                services.AddDataProtection(options => dataprotectionSection.Bind(options)).ConfigureDataProtection(Configuration.GetSection(nameof(DataProtectionOptions)));
+            }
         }
     }
 }
