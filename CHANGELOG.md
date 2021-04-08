@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/Aguafrommars/Templates/compare/1.1.0...1.1.1) (2021-04-08)
+
+
+### Bug Fixes
+
+* remove doublon package ref ([b829faf](https://github.com/Aguafrommars/Templates/commit/b829fafbeb10747e6ada9e707795aa67c711141f))
+
 # [1.1.0](https://github.com/Aguafrommars/Templates/compare/1.0.2...1.1.0) (2021-04-07)
 
 
