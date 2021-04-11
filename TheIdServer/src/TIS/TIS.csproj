@@ -13,7 +13,6 @@
 		<PackageReference Include="Aguacongas.IdentityServer.RavenDb.Store" Version="2.3.0" />
 		<PackageReference Include="Aguacongas.IdentityServer.Http.Store" Version="2.3.0" />
 		<PackageReference Include="Aguacongas.TheIdServer.Authentication" Version="2.3.0" />
-		<PackageReference Include="Aguacongas.TheIdServer.Authentication" Version="2.3.0" />
 		<PackageReference Include="Aguacongas.TheIdServer.Identity" Version="2.3.0" />
 		<PackageReference Include="Aguacongas.TheIdServer.Migrations.MySql" Version="2.3.0" />
 		<PackageReference Include="Aguacongas.TheIdServer.Migrations.Oracle" Version="2.3.0" />
