@@ -39,9 +39,12 @@ namespace Microsoft.Extensions.DependencyInjection
                     builder.PersistKeysToDbContext<OperationalDbContext>();
                     break;
                 case StorageKind.RavenDb:
-                    builder.PersistKeysToRavenDb<DocumentSessionWrapper>();
+                    builder.PersistKeysToRavenDb();
                     break;
-                case StorageKind.FileSytem:
+                case StorageKind.MongoDb:
+                    builder.PersistKeysToMongoDb();
+                    break;
+                case StorageKind.FileSystem:
                     builder.PersistKeysToFileSystem(new DirectoryInfo(dataProtectionsOptions.StorageConnectionString));
                     break;
                 case StorageKind.Redis:
@@ -68,9 +71,7 @@ namespace Microsoft.Extensions.DependencyInjection
                         builder.ProtectKeysWithAzureKeyVault(new Uri(protectOptions.AzureKeyVaultKeyId), new DefaultAzureCredential());
                         break;
                     case KeyProtectionKind.WindowsDpApi:
-#pragma warning disable CA1416 // Validate platform compatibility
                         builder.ProtectKeysWithDpapi(protectOptions.WindowsDPAPILocalMachine);
-#pragma warning restore CA1416 // Validate platform compatibility
                         break;
                     case KeyProtectionKind.WindowsDpApiNg:
                         ConfigureWindowsDpApiNg(builder, protectOptions);
@@ -99,7 +100,6 @@ namespace Microsoft.Extensions.DependencyInjection
             }
         }
 
-        [SuppressMessage("Interoperability", "CA1416:Validate platform compatibility", Justification = "Documented")]
         private static void ConfigureWindowsDpApiNg(IDataProtectionBuilder builder, KeyProtectionOptions protectOptions)
         {
             if (!string.IsNullOrEmpty(protectOptions.WindowsDpApiNgCerticate))

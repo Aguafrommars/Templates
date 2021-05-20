@@ -4,7 +4,6 @@ using Aguacongas.IdentityServer.Admin.Configuration;
 using Aguacongas.IdentityServer.EntityFramework.Store;
 using Aguacongas.IdentityServer.KeysRotation;
 using Aguacongas.IdentityServer.KeysRotation.Extentions;
-using Aguacongas.IdentityServer.KeysRotation.RavenDb;
 using Microsoft.Extensions.Configuration;
 using StackExchange.Redis;
 using System;
@@ -36,9 +35,12 @@ namespace Microsoft.Extensions.DependencyInjection
                     builder.PersistKeysToDbContext<OperationalDbContext>();
                     break;
                 case StorageKind.RavenDb:
-                    builder.PersistKeysToRavenDb<DocumentSessionWrapper>();
+                    builder.PersistKeysToRavenDb();
                     break;
-                case StorageKind.FileSytem:
+                case StorageKind.MongoDb:
+                    builder.PersistKeysToMongoDb();
+                    break;
+                case StorageKind.FileSystem:
                     builder.PersistKeysToFileSystem(new DirectoryInfo(dataProtectionsOptions.StorageConnectionString));
                     break;
                 case StorageKind.Redis:

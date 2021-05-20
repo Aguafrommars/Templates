@@ -1,12 +1,12 @@
 ﻿// Copyright (c) 2020 @Olivier Lefebvre. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 using Aguacongas.AspNetCore.Authentication;
-using Aguacongas.AspNetCore.Authentication.EntityFramework;
 using Aguacongas.IdentityServer.Abstractions;
 using Aguacongas.IdentityServer.Admin.Http.Store;
 using Aguacongas.IdentityServer.Admin.Services;
 using Aguacongas.IdentityServer.Store;
 using Aguacongas.IdentityServer.Store.Entity;
+using Aguacongas.TheIdServer.Authentication;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.DataProtection.KeyManagement;
@@ -158,7 +158,7 @@ namespace Aguacongas.TheIdServer.IntegrationTest
                     RequestUri = request.RequestUri
                 };
 
-                foreach(var header in request.Headers)
+                foreach (var header in request.Headers)
                 {
                     newRequest.Headers.Add(header.Key, header.Value);
                 }

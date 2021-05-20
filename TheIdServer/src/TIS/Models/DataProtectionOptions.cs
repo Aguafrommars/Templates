@@ -10,9 +10,10 @@ namespace TIS.Models
         EntityFramework,
         Redis,
         AzureStorage,
-        FileSytem,
+        FileSystem,
         Registry,
-        RavenDb
+        RavenDb,
+        MongoDb
     }
 
     public enum KeyProtectionKind

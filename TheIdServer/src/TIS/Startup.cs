@@ -8,6 +8,7 @@ using Aguacongas.IdentityServer.Admin.Services;
 using Aguacongas.IdentityServer.EntityFramework.Store;
 using Aguacongas.IdentityServer.Store;
 using Aguacongas.TheIdServer.Admin.Hubs;
+using Aguacongas.TheIdServer.Authentication;
 using Aguacongas.TheIdServer.BlazorApp.Infrastructure.Services;
 using Aguacongas.TheIdServer.BlazorApp.Models;
 using Aguacongas.TheIdServer.BlazorApp.Services;
@@ -48,8 +49,6 @@ using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using TIS.Models;
 using TIS.Services;
-using Auth = Aguacongas.TheIdServer.Authentication;
-using RavenDbStore = Aguacongas.IdentityServer.RavenDb.Store;
 
 namespace TIS
 {
@@ -74,11 +73,17 @@ namespace TIS
             void configureOptions(IdentityServerOptions options)
                 => Configuration.GetSection("PrivateServerAuthentication").Bind(options);
 
-            services.AddConfigurationHttpStores(configureOptions);
+            services.AddTransient<ISchemeChangeSubscriber, SchemeChangeSubscriber<SchemeDefinition>>()
+                .AddIdentityProviderStore()
+                .AddOperationalStores()
+                .AddIdentity<ApplicationUser, IdentityRole>(
+                    options => Configuration.GetSection(nameof(IdentityOptions)).Bind(options))
+                .AddTheIdServerStores()
+                .AddDefaultTokenProviders();
 
             if (isProxy)
             {
-                AddProxyServices(services, configureOptions);
+                services.AddConfigurationHttpStores(configureOptions);
             }
             else
             {
@@ -87,7 +92,7 @@ namespace TIS
 
             ConfigureDataProtection(services);
 
-            var identityBuilder = services.AddClaimsProviders(Configuration)
+            var identityServerBuilder = services.AddClaimsProviders(Configuration)
                 .Configure<ForwardedHeadersOptions>(Configuration.GetSection(nameof(ForwardedHeadersOptions)))
                 .Configure<AccountOptions>(Configuration.GetSection(nameof(AccountOptions)))
                 .Configure<DynamicClientRegistrationOptions>(Configuration.GetSection(nameof(DynamicClientRegistrationOptions)))
@@ -100,11 +105,11 @@ namespace TIS
                 .AddDynamicClientRegistration()
                 .ConfigureKey(Configuration.GetSection("IdentityServer:Key"));
 
-            identityBuilder.AddJwtRequestUriHttpClient();
+            identityServerBuilder.AddJwtRequestUriHttpClient();
 
             if (isProxy)
             {
-                identityBuilder.Services.AddTransient<IProfileService>(p =>
+                identityServerBuilder.Services.AddTransient<IProfileService>(p =>
                 {
                     var options = p.GetRequiredService<IOptions<IdentityServerOptions>>().Value;
                     var httpClient = p.GetRequiredService<IHttpClientFactory>().CreateClient(options.HttpClientName);
@@ -117,10 +122,10 @@ namespace TIS
             }
             else
             {
-                identityBuilder.AddProfileService<ProfileService<ApplicationUser>>();
+                identityServerBuilder.AddProfileService<ProfileService<ApplicationUser>>();
                 if (!Configuration.GetValue<bool>("DisableTokenCleanup"))
                 {
-                    identityBuilder.AddTokenCleaner(Configuration.GetValue<TimeSpan?>("TokenCleanupInterval") ?? TimeSpan.FromMinutes(1));
+                    identityServerBuilder.AddTokenCleaner(Configuration.GetValue<TimeSpan?>("TokenCleanupInterval") ?? TimeSpan.FromMinutes(1));
                 }
             }
 
@@ -158,37 +163,22 @@ namespace TIS
                     var settings = options.SerializerSettings;
                     settings.NullValueHandling = NullValueHandling.Ignore;
                     settings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-                });
+                })
+                .AddIdentityServerWsFederation();
 
-            if (isProxy)
-            {
-                mvcBuilder.AddIdentityServerAdmin<ApplicationUser, Auth.SchemeDefinition>()
-                    .AddTheIdServerHttpStore();
-            }
-            else if (DbType == DbTypes.RavenDb)
-            {
-                mvcBuilder.AddIdentityServerAdmin<ApplicationUser, RavenDbStore.SchemeDefinition>()
-                    .AddRavenDbStore();
-            }
-            else
-            {
-                mvcBuilder.AddIdentityServerAdmin<ApplicationUser, SchemeDefinition>()
-                    .AddEntityFrameworkStore<ConfigurationDbContext>();
-            }
+            ConfigureDynamicProviderManager(mvcBuilder, isProxy);
 
             services.AddRemoteAuthentication<RemoteAuthenticationState, RemoteUserAccount, OidcProviderOptions>();
             services.AddScoped<LazyAssemblyLoader>()
                  .AddScoped<AuthenticationStateProvider, RemoteAuthenticationService>()
                  .AddScoped<SignOutSessionStateManager>()
-                 .AddScoped<ISharedStringLocalizerAsync, PreRenderStringLocalizer>()
-                 .AddTransient<IReadOnlyCultureStore, ReadOnlyCultureStore>()
-                 .AddTransient<IReadOnlyLocalizedResourceStore, ReadOnlyLocalizedResourceStore>()
+                 .AddScoped<ISharedStringLocalizerAsync, Aguacongas.TheIdServer.BlazorApp.Infrastructure.Services.StringLocalizer>()
+                 .AddTransient<IReadOnlyCultureStore, PreRenderCultureStore>()
+                 .AddTransient<IReadOnlyLocalizedResourceStore, PreRenderLocalizedResourceStore>()
                  .AddTransient<IAccessTokenProvider, AccessTokenProvider>()
                  .AddTransient<Microsoft.JSInterop.IJSRuntime, JSRuntime>()
-                 .AddTransient<IKeyStore<RsaEncryptorDescriptor>>(p => new KeyStore<RsaEncryptorDescriptor>(p.CreateApiHttpClient(p.GetRequiredService<IOptions<IdentityServerOptions>>().Value),
-                         p.GetRequiredService<ILogger<KeyStore<RsaEncryptorDescriptor>>>()))
-                 .AddTransient<IKeyStore<IAuthenticatedEncryptorDescriptor>>(p => new KeyStore<IAuthenticatedEncryptorDescriptor>(p.CreateApiHttpClient(p.GetRequiredService<IOptions<IdentityServerOptions>>().Value),
-                         p.GetRequiredService<ILogger<KeyStore<IAuthenticatedEncryptorDescriptor>>>()))
+                 .AddTransient<IKeyStore<RsaEncryptorDescriptor>, KeyStore<RsaEncryptorDescriptor, Aguacongas.IdentityServer.KeysRotation.RsaEncryptorDescriptor>>()
+                 .AddTransient<IKeyStore<IAuthenticatedEncryptorDescriptor>, KeyStore<IAuthenticatedEncryptorDescriptor, Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption.ConfigurationModel.IAuthenticatedEncryptorDescriptor>>()
                  .AddAdminApplication(new Settings())
                  .AddDatabaseDeveloperPageExceptionFilter()
                  .AddRazorPages(options => options.Conventions.AuthorizeAreaFolder("Identity", "/Account"));
@@ -300,19 +290,29 @@ namespace TIS
                     endpoints.MapFallbackToPage("/_Host");
                 });
 
-            if (isProxy)
-            {
-                app.LoadDynamicAuthenticationConfiguration<Auth.SchemeDefinition>();
-                return;
-            }
-            if (DbType == DbTypes.RavenDb)
-            {
-                app.LoadDynamicAuthenticationConfiguration<RavenDbStore.SchemeDefinition>();
-                return;
-            }
             app.LoadDynamicAuthenticationConfiguration<SchemeDefinition>();
         }
 
+        private void ConfigureDynamicProviderManager(IMvcBuilder mvcBuilder, bool isProxy)
+        {
+            var dynamicBuilder = mvcBuilder.AddIdentityServerAdmin<ApplicationUser, SchemeDefinition>();
+            if (isProxy)
+            {
+                dynamicBuilder.AddTheIdServerStore();
+            }
+            else if (DbType == DbTypes.MongoDb)
+            {
+                dynamicBuilder.AddTheIdServerEntityMongoDbStore();
+            }
+            else if (DbType == DbTypes.RavenDb)
+            {
+                dynamicBuilder.AddTheIdServerStoreRavenDbStore();
+            }
+            else
+            {
+                dynamicBuilder.AddTheIdServerEntityFrameworkStore();
+            }
+        }
         private void AddForceHttpsSchemeMiddleware(IApplicationBuilder app)
         {
             var forceHttpsScheme = Configuration.GetValue<bool>("ForceHttpsScheme");
@@ -421,10 +421,6 @@ namespace TIS
             services.Configure<IdentityServerOptions>(options => Configuration.GetSection("ApiAuthentication").Bind(options))
                 .AddIdentityProviderStore();
 
-            var identityBuilder = services.AddIdentity<ApplicationUser, IdentityRole>(
-                    options => Configuration.GetSection(nameof(IdentityOptions)).Bind(options))
-                .AddDefaultTokenProviders();
-
             if (DbType == DbTypes.RavenDb)
             {
                 services.Configure<RavenDbOptions>(options => Configuration.GetSection(nameof(RavenDbOptions)).Bind(options))
@@ -443,24 +439,20 @@ namespace TIS
                         documentStore.SetFindIdentityPropertyForIdentityServerStores();
                         return documentStore.Initialize();
                     })
-                    .AddTransient<ISchemeChangeSubscriber, SchemeChangeSubscriber<RavenDbStore.SchemeDefinition>>()
-                    .AddIdentityServer4AdminRavenDbkStores<ApplicationUser>()
-                    .AddConfigurationRavenDbkStores()
-                    .AddOperationalRavenDbStores();
+                    .AddIdentityServer4AdminRavenDbStores();
 
-                identityBuilder.AddRavenDbStores();
+            }
+            else if (DbType == DbTypes.MongoDb)
+            {
+                var connectionString = Configuration.GetConnectionString("DefaultConnection");
+                services.AddIdentityServer4AdminMongoDbStores(connectionString);
             }
             else
             {
-                services.AddTransient<ISchemeChangeSubscriber, SchemeChangeSubscriber<SchemeDefinition>>()
-                    .AddDbContext<ApplicationDbContext>(options => options.UseDatabaseFromConfiguration(Configuration))
-                    .AddIdentityServer4AdminEntityFrameworkStores<ApplicationUser, ApplicationDbContext>()
+                services.AddIdentityServer4AdminEntityFrameworkStores(options => options.UseDatabaseFromConfiguration(Configuration))
                     .AddConfigurationEntityFrameworkStores(options => options.UseDatabaseFromConfiguration(Configuration))
                     .AddOperationalEntityFrameworkStores(options => options.UseDatabaseFromConfiguration(Configuration));
-
-                identityBuilder.AddEntityFrameworkStores<ApplicationDbContext>();
             }
-
 
             var signalRBuilder = services.AddSignalR(options => Configuration.GetSection("SignalR:HubOptions").Bind(options));
             if (Configuration.GetValue<bool>("SignalR:UseMessagePack"))
@@ -475,22 +467,11 @@ namespace TIS
             }
         }
 
-        private void AddProxyServices(IServiceCollection services, Action<IdentityServerOptions> configureOptions)
-        {
-            services.AddTransient<ISchemeChangeSubscriber, SchemeChangeSubscriber<Auth.SchemeDefinition>>()
-               .AddIdentityProviderStore()
-               .AddOperationalHttpStores()
-               .AddIdentity<ApplicationUser, IdentityRole>(
-                   options => Configuration.GetSection(nameof(IdentityOptions)).Bind(options))
-               .AddTheIdServerStores(configureOptions)
-               .AddDefaultTokenProviders();
-        }
-
         private void ConfigureInitialData(IApplicationBuilder app)
         {
             var dbType = Configuration.GetValue<DbTypes>("DbType");
             if (Configuration.GetValue<bool>("Migrate") &&
-                dbType != DbTypes.InMemory && dbType != DbTypes.RavenDb)
+                dbType != DbTypes.InMemory && dbType != DbTypes.RavenDb && dbType != DbTypes.MongoDb)
             {
                 using var scope = app.ApplicationServices.CreateScope();
                 var configContext = scope.ServiceProvider.GetRequiredService<ConfigurationDbContext>();

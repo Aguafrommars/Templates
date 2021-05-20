@@ -24,7 +24,6 @@ namespace TIS
     {
         public static void EnsureSeedData(IConfiguration configuration)
         {
-
             var services = new ServiceCollection();
             var startup = new Startup(configuration, null);
             startup.ConfigureServices(services);
@@ -33,7 +32,7 @@ namespace TIS
             using var scope = serviceProvider.CreateScope();
 
             var dbType = configuration.GetValue<DbTypes>("DbType");
-            if (dbType != DbTypes.InMemory && dbType != DbTypes.RavenDb)
+            if (dbType != DbTypes.InMemory && dbType != DbTypes.RavenDb && dbType != DbTypes.MongoDb)
             {
                 var configContext = scope.ServiceProvider.GetRequiredService<ConfigurationDbContext>();
                 configContext.Database.Migrate();
@@ -45,8 +44,65 @@ namespace TIS
                 appcontext.Database.Migrate();
             }
 
-            SeedUsers(scope, configuration);
-            SeedConfiguration(scope, configuration);
+            if (configuration.GetValue<bool>("Seed"))
+            {
+                SeedUsers(scope, configuration);
+                SeedConfiguration(scope, configuration);
+            }
+        }
+
+        public static void SeedUsers(IServiceScope scope, IConfiguration configuration)
+        {
+            var provider = scope.ServiceProvider;
+
+            var roleMgr = provider.GetRequiredService<RoleManager<IdentityRole>>();
+
+            var roles = new string[]
+            {
+                SharedConstants.WRITER,
+                SharedConstants.READER
+            };
+            foreach (var role in roles)
+            {
+                if (roleMgr.FindByNameAsync(role).GetAwaiter().GetResult() == null)
+                {
+                    ExcuteAndCheckResult(() => roleMgr.CreateAsync(new IdentityRole
+                    {
+                        Name = role
+                    })).GetAwaiter().GetResult();
+                }
+            }
+
+            var userMgr = provider.GetRequiredService<UserManager<ApplicationUser>>();
+            var userList = configuration.GetSection("InitialData:Users").Get<IEnumerable<ApplicationUser>>() ?? Array.Empty<ApplicationUser>();
+            int index = 0;
+            foreach (var user in userList)
+            {
+                var existing = userMgr.FindByNameAsync(user.UserName).GetAwaiter().GetResult();
+                if (existing != null)
+                {
+                    Console.WriteLine($"{user.UserName} already exists");
+                    continue;
+                }
+                var pwd = configuration.GetValue<string>($"InitialData:Users:{index}:Password");
+                ExcuteAndCheckResult(() => userMgr.CreateAsync(user, pwd))
+                    .GetAwaiter().GetResult();
+
+                var claimList = configuration.GetSection($"InitialData:Users:{index}:Claims").Get<IEnumerable<Entity.UserClaim>>()
+                    .Select(c => new Claim(c.ClaimType, c.ClaimValue, c.OriginalType, c.Issuer))
+                    .ToList();
+                claimList.Add(new Claim(JwtClaimTypes.UpdatedAt, DateTime.Now.ToEpochTime().ToString(), ClaimValueTypes.Integer64));
+                ExcuteAndCheckResult(() => userMgr.AddClaimsAsync(user, claimList))
+                    .GetAwaiter().GetResult();
+
+                var roleList = configuration.GetSection($"InitialData:Users:{index}:Roles").Get<IEnumerable<string>>();
+                ExcuteAndCheckResult(() => userMgr.AddToRolesAsync(user, roleList))
+                    .GetAwaiter().GetResult();
+
+                Console.WriteLine($"{user.UserName} created");
+
+                index++;
+            }
         }
 
         public static void SeedConfiguration(IServiceScope scope, IConfiguration configuration)
@@ -56,6 +112,7 @@ namespace TIS
             SeedIdentities(provider);
             SeedApiScopes(configuration, provider);
             SeedApis(configuration, provider);
+            SeedRelyingParties(configuration, provider);
         }
 
         private static void SeedApis(IConfiguration configuration, IServiceProvider provider)
@@ -469,57 +526,48 @@ namespace TIS
             }
         }
 
-        public static void SeedUsers(IServiceScope scope, IConfiguration configuration)
+        private static void SeedRelyingParties(IConfiguration configuration, IServiceProvider provider)
         {
-            var provider = scope.ServiceProvider;
+            var relyingPartyStore = provider.GetRequiredService<IAdminStore<Entity.RelyingParty>>();
+            var relyingPartyClaimMappingStore = provider.GetRequiredService<IAdminStore<Entity.RelyingPartyClaimMapping>>();
 
-            var roleMgr = provider.GetRequiredService<RoleManager<IdentityRole>>();
-
-            var roles = new string[]
+            foreach (var relyingParty in Config.GetRelyingParties(configuration))
             {
-                SharedConstants.WRITER,
-                SharedConstants.READER
-            };
-            foreach (var role in roles)
-            {
-                if (roleMgr.FindByNameAsync(role).GetAwaiter().GetResult() == null)
+                if (relyingPartyStore.GetAsync(relyingParty.Id, null).GetAwaiter().GetResult() != null)
                 {
-                    ExcuteAndCheckResult(() => roleMgr.CreateAsync(new IdentityRole
-                    {
-                        Name = role
-                    })).GetAwaiter().GetResult();
-                }
-            }
-
-            var userMgr = provider.GetRequiredService<UserManager<ApplicationUser>>();
-            var userList = configuration.GetSection("InitialData:Users").Get<IEnumerable<ApplicationUser>>() ?? Array.Empty<ApplicationUser>();
-            int index = 0;
-            foreach (var user in userList)
-            {
-                var existing = userMgr.FindByNameAsync(user.UserName).GetAwaiter().GetResult();
-                if (existing != null)
-                {
-                    Console.WriteLine($"{user.UserName} already exists");
                     continue;
                 }
-                var pwd = configuration.GetValue<string>($"InitialData:Users:{index}:Password");
-                ExcuteAndCheckResult(() => userMgr.CreateAsync(user, pwd))
-                    .GetAwaiter().GetResult();
 
-                var claimList = configuration.GetSection($"InitialData:Users:{index}:Claims").Get<IEnumerable<UserClaim>>()
-                    .Select(c => c.ToClaim())
-                    .ToList();
-                claimList.Add(new Claim(JwtClaimTypes.UpdatedAt, DateTime.Now.ToEpochTime().ToString(), ClaimValueTypes.Integer64));
-                ExcuteAndCheckResult(() => userMgr.AddClaimsAsync(user, claimList))
-                    .GetAwaiter().GetResult();
+                relyingPartyStore.CreateAsync(new Entity.RelyingParty
+                {
+                    Id = relyingParty.Id,
+                    Description = relyingParty.Description,
+                    DigestAlgorithm = relyingParty.DigestAlgorithm,
+                    EncryptionCertificate = relyingParty.EncryptionCertificate,
+                    SamlNameIdentifierFormat = relyingParty.SamlNameIdentifierFormat,
+                    SignatureAlgorithm = relyingParty.SignatureAlgorithm,
+                    TokenType = relyingParty.TokenType
+                }).GetAwaiter().GetResult();
+                SeedRelyingPartyClaimMappings(relyingPartyClaimMappingStore, relyingParty);
+            }
+        }
 
-                var roleList = configuration.GetSection($"InitialData:Users:{index}:Roles").Get<IEnumerable<string>>();
-                ExcuteAndCheckResult(() => userMgr.AddToRolesAsync(user, roleList))
-                    .GetAwaiter().GetResult();
+        private static void SeedRelyingPartyClaimMappings(IAdminStore<Entity.RelyingPartyClaimMapping> relyingPartyClaimMappingStore, Entity.RelyingParty relyingParty)
+        {
+            if (relyingParty.ClaimMappings == null)
+            {
+                return;
+            }
 
-                Console.WriteLine($"{user.UserName} created");
-
-                index++;
+            foreach (var mapping in relyingParty.ClaimMappings)
+            {
+                relyingPartyClaimMappingStore.CreateAsync(new Entity.RelyingPartyClaimMapping
+                {
+                    FromClaimType = mapping.FromClaimType,
+                    Id = Guid.NewGuid().ToString(),
+                    RelyingPartyId = relyingParty.Id,
+                    ToClaimType = mapping.ToClaimType
+                }).GetAwaiter().GetResult();
             }
         }
 

@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Entity = Aguacongas.IdentityServer.Store.Entity;
 
 namespace TIS
 {
@@ -39,9 +40,7 @@ namespace TIS
         }
 
         public static IEnumerable<ApiScope> GetApiScopes(IConfiguration configuration)
-        {
-            return configuration.GetSection("InitialData:ApiScopes").Get<IEnumerable<ApiScope>>() ?? Array.Empty<ApiScope>();
-        }
+        => configuration.GetSection("InitialData:ApiScopes").Get<IEnumerable<ApiScope>>() ?? Array.Empty<ApiScope>();
 
         public static IEnumerable<Client> GetClients(IConfiguration configuration)
         {
@@ -55,5 +54,8 @@ namespace TIS
                 yield return client;
             }
         }
+
+        public static IEnumerable<Entity.RelyingParty> GetRelyingParties(IConfiguration configuration)
+        => configuration.GetSection("InitialData:RelyingParties").Get<IEnumerable<Entity.RelyingParty>>() ?? Array.Empty<Entity.RelyingParty>();
     }
 }
