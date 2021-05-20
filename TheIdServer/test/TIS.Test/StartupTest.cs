@@ -4,11 +4,10 @@ using Aguacongas.AspNetCore.Authentication;
 using Aguacongas.IdentityServer.Abstractions;
 using Aguacongas.IdentityServer.Admin.Configuration;
 using Aguacongas.IdentityServer.Admin.Services;
-using Aguacongas.IdentityServer.EntityFramework.Store;
 using Aguacongas.IdentityServer.Store;
 using Aguacongas.IdentityServer.Store.Entity;
 using Aguacongas.TheIdServer.Admin.Hubs;
-using Aguacongas.TheIdServer.Data;
+using Aguacongas.TheIdServer.Authentication;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption;
 using Microsoft.AspNetCore.DataProtection.Repositories;
@@ -25,7 +24,6 @@ using System.Linq;
 using TIS;
 using TIS.Models;
 using Xunit;
-using Auth = Aguacongas.TheIdServer.Authentication;
 
 namespace Aguacongas.TheIdServer.Test
 {
@@ -51,7 +49,6 @@ namespace Aguacongas.TheIdServer.Test
             var schemeChangeSubscriber = provider.GetService<ISchemeChangeSubscriber>();
             Assert.NotNull(schemeChangeSubscriber);
             Assert.Equal(typeof(SchemeChangeSubscriber<SchemeDefinition>), schemeChangeSubscriber.GetType());
-            Assert.NotNull(provider.GetService<ApplicationDbContext>());
         }
 
         [Fact]
@@ -74,8 +71,7 @@ namespace Aguacongas.TheIdServer.Test
 
             var schemeChangeSubscriber = provider.GetService<ISchemeChangeSubscriber>();
             Assert.NotNull(schemeChangeSubscriber);
-            Assert.Equal(typeof(SchemeChangeSubscriber<Auth.SchemeDefinition>), schemeChangeSubscriber.GetType());
-            Assert.Null(provider.GetService<ApplicationDbContext>());
+            Assert.Equal(typeof(SchemeChangeSubscriber<SchemeDefinition>), schemeChangeSubscriber.GetType());
         }
 
         [Fact]
@@ -146,8 +142,8 @@ namespace Aguacongas.TheIdServer.Test
                 ["Proxy"] = "true"
             }).Build();
             var environementMock = new Mock<IWebHostEnvironment>();
-            var storeMock = new Mock<IDynamicProviderStore<Auth.SchemeDefinition>>();
-            storeMock.SetupGet(m => m.SchemeDefinitions).Returns(Array.Empty<Auth.SchemeDefinition>().AsQueryable()).Verifiable();
+            var storeMock = new Mock<IDynamicProviderStore<SchemeDefinition>>();
+            storeMock.SetupGet(m => m.SchemeDefinitions).Returns(Array.Empty<SchemeDefinition>().AsQueryable()).Verifiable();
             var culturestoreMock = new Mock<IAdminStore<Culture>>();
             culturestoreMock.Setup(m => m.GetAsync(It.IsAny<PageRequest>(), default)).ReturnsAsync(new PageResponse<Culture>
             {
@@ -155,7 +151,7 @@ namespace Aguacongas.TheIdServer.Test
             });
             var sut = new Startup(configuration, environementMock.Object);
             using var host = WebHost.CreateDefaultBuilder()
-                .ConfigureServices(services => 
+                .ConfigureServices(services =>
                 {
                     sut.ConfigureServices(services);
                     services.AddTransient(p => storeMock.Object);
@@ -206,7 +202,7 @@ namespace Aguacongas.TheIdServer.Test
             if (dbTypes != DbTypes.InMemory)
             {
                 Assert.ThrowsAny<Exception>(() => host.Start());
-            }            
+            }
         }
 
         [Fact]
@@ -215,7 +211,7 @@ namespace Aguacongas.TheIdServer.Test
             var configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
             {
                 ["DataProtectionOptions:StorageKind"] = StorageKind.AzureStorage.ToString(),
-                ["DataProtectionOptions:StorageConnectionString"] = "https://azure.com?blobUri=test"
+                ["DataProtectionOptions:StorageConnectionString"] = "https://md-3r0d4kzc5jhz.blob.core.windows.net/s3vffgdlczdj/abcd?sv=2017-04-17&sr=b&si=e931bb4b-8a79-4119-b4bb-8b2c1b763369&sig=SIGNATURE_WILL_BE_HERE"
             }).Build();
             var environementMock = new Mock<IWebHostEnvironment>();
             var storeMock = new Mock<IDynamicProviderStore<SchemeDefinition>>();
@@ -269,7 +265,7 @@ namespace Aguacongas.TheIdServer.Test
         {
             var configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
             {
-                ["DataProtectionOptions:StorageKind"] = StorageKind.FileSytem.ToString(),
+                ["DataProtectionOptions:StorageKind"] = StorageKind.FileSystem.ToString(),
                 ["DataProtectionOptions:StorageConnectionString"] = @"C:\test"
             }).Build();
             var environementMock = new Mock<IWebHostEnvironment>();
@@ -355,7 +351,7 @@ namespace Aguacongas.TheIdServer.Test
             {
                 ["DataProtectionOptions:StorageKind"] = StorageKind.None.ToString(),
                 ["DataProtectionOptions:KeyProtectionOptions:KeyProtectionKind"] = KeyProtectionKind.AzureKeyVault.ToString(),
-                ["DataProtectionOptions:KeyProtectionOptions:AzureKeyVaultKeyId"] = "test",
+                ["DataProtectionOptions:KeyProtectionOptions:AzureKeyVaultKeyId"] = "http://test",
                 ["DataProtectionOptions:KeyProtectionOptions:AzureKeyVaultClientId"] = "test",
                 ["DataProtectionOptions:KeyProtectionOptions:AzureKeyVaultClientSecret"] = "test",
             }).Build();
@@ -584,7 +580,7 @@ namespace Aguacongas.TheIdServer.Test
             {
                 ["IdentityServer:Key:Type"] = KeyKinds.KeysRotation.ToString(),
                 ["IdentityServer:Key:StorageKind"] = StorageKind.AzureStorage.ToString(),
-                ["IdentityServer:Key:StorageConnectionString"] = "https://azure.com?blobUri=test"
+                ["IdentityServer:Key:StorageConnectionString"] = "https://azure.com?sv=test"
             }).Build();
             var environementMock = new Mock<IWebHostEnvironment>();
             var storeMock = new Mock<IDynamicProviderStore<SchemeDefinition>>();
@@ -640,7 +636,7 @@ namespace Aguacongas.TheIdServer.Test
             var configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
             {
                 ["IdentityServer:Key:Type"] = KeyKinds.KeysRotation.ToString(),
-                ["IdentityServer:Key:StorageKind"] = StorageKind.FileSytem.ToString(),
+                ["IdentityServer:Key:StorageKind"] = StorageKind.FileSystem.ToString(),
                 ["IdentityServer:Key:StorageConnectionString"] = @"C:\test"
             }).Build();
             var environementMock = new Mock<IWebHostEnvironment>();

@@ -10,6 +10,7 @@ namespace TIS.Models
         MySql,
         Oracle,
         PostgreSQL,
-        RavenDb
+        RavenDb,
+        MongoDb
     }
 }
