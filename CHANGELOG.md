@@ -1,3 +1,28 @@
+## [1.1.1](https://github.com/Aguafrommars/Templates/compare/1.1.0...1.1.1) (2021-04-08)
+
+
+### Bug Fixes
+
+* remove doublon package ref ([b829faf](https://github.com/Aguafrommars/Templates/commit/b829fafbeb10747e6ada9e707795aa67c711141f))
+
+# [1.1.0](https://github.com/Aguafrommars/Templates/compare/1.0.2...1.1.0) (2021-04-07)
+
+
+### Bug Fixes
+
+* update packages ([a8830d0](https://github.com/Aguafrommars/Templates/commit/a8830d0a192bc4338423d0bc9d81e80e483d890a))
+* update packages ([f6851e2](https://github.com/Aguafrommars/Templates/commit/f6851e248438502dbaaddcdef011d5bd1760e2da))
+* update packages ([1c1f727](https://github.com/Aguafrommars/Templates/commit/1c1f72732cd5afb610652ffd8032b2d7d656815d))
+* update packages ([66e04e5](https://github.com/Aguafrommars/Templates/commit/66e04e5f465342f516182e127835143f3aee296a))
+* update packages ([a4c7061](https://github.com/Aguafrommars/Templates/commit/a4c70612fce4cda25d6b877845231d5d1a854fbe))
+* update packages ([10a2bd9](https://github.com/Aguafrommars/Templates/commit/10a2bd944550ebe6954eca45021e25be1ed31ce4))
+* update packages ([c5adbbb](https://github.com/Aguafrommars/Templates/commit/c5adbbb0049d2cd1dfa99c69742b37c831e6f7c6))
+
+
+### Features
+
+* ravendb ([569f055](https://github.com/Aguafrommars/Templates/commit/569f055cb281c8b8497365d746fc9be40502a578))
+
 ## [1.0.2](https://github.com/Aguafrommars/Templates/compare/1.0.1...1.0.2) (2021-03-01)
 
 
