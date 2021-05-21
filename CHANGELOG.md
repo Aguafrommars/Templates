@@ -1,3 +1,21 @@
+# [1.2.0](https://github.com/Aguafrommars/Templates/compare/1.1.1...1.2.0) (2021-05-20)
+
+
+### Bug Fixes
+
+* update packages ([9f0eaf4](https://github.com/Aguafrommars/Templates/commit/9f0eaf497358f2d3845c769a0b44a5afe6c2f4e8))
+* update packages ([00c42b1](https://github.com/Aguafrommars/Templates/commit/00c42b105eebcccbfbc803b96c3e549a5621d42f))
+* update packages ([52e69f4](https://github.com/Aguafrommars/Templates/commit/52e69f454cf7588cccae3d494e76be6e5a9ff055))
+* update packages ([d902763](https://github.com/Aguafrommars/Templates/commit/d902763d28f1ad534ae209976c8af57a731bd862))
+* update packages ([670f951](https://github.com/Aguafrommars/Templates/commit/670f95118d5a2f090f79d23fe90de2023f327164))
+* update packages ([d54e3a4](https://github.com/Aguafrommars/Templates/commit/d54e3a40239741a3c2df9a43564811efe79bd2f0))
+* update packages ([a35b2d4](https://github.com/Aguafrommars/Templates/commit/a35b2d4e5e8a88af056708c0f7ee903d56a58c4f))
+
+
+### Features
+
+* use version 3.0.0 ([f2e8805](https://github.com/Aguafrommars/Templates/commit/f2e8805924aa3778373bfb7a6fee93e102c54b8b))
+
 ## [1.1.1](https://github.com/Aguafrommars/Templates/compare/1.1.0...1.1.1) (2021-04-08)
 
 
