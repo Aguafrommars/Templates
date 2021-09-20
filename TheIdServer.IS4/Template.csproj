@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageType>Template</PackageType>
+    <PackageVersion>1.0</PackageVersion>
+    <PackageId>TheIdServer.IS4.Template</PackageId>
+    <Title>TheIdServer identityserver4 Template</Title>
+    <Authors>Olivier Lefebvre</Authors>
+    <Description>Template to create a TheIdServer for identityserver4 solution.</Description>
+    <PackageTags>dotnet-new;templates;theidserver;identityserver4;oidc;ws-federation;oauth;identity;authentication;security;iam</PackageTags>
+    <TargetFramework>net5.0</TargetFramework>
+
+    <IncludeContentInPack>true</IncludeContentInPack>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <ContentTargetFolders>content</ContentTargetFolders>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="**\*" Exclude="**\bin\**;**\obj\**;**\*.csproj.user;**\.vs\**;**\TIS.db;update-dependencies.ps1;update-dependencies.cmd;TIS.sln.licenseheader;Template.csproj" />
+    <Compile Remove="**\*" />
+  </ItemGroup>
+
+</Project>
