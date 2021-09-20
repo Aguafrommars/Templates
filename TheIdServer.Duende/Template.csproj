@@ -16,7 +16,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="TheIdServer.Duende\**\*" Exclude="TheIdServer.Duende\**\bin\**;TheIdServer\**\obj\**;TheIdServer.Duende\**\*.csproj.user;TheIdServer.Duende\**\.vs\**;TheIdServer.Duende\**\TIS.db;TheIdServer\**\update-dependencies.ps1;TheIdServer\**\update-dependencies.cmd;TheIdServer.Duende\TheIdServer.sln.licenseheader" />
+    <Content Include="**\*" Exclude="**\bin\**;**\obj\**;**\*.csproj.user;**\.vs\**;**\TIS.db;update-dependencies.ps1;update-dependencies.cmd;TIS.sln.licenseheader;Template.csproj" />
     <Compile Remove="**\*" />
   </ItemGroup>
 
