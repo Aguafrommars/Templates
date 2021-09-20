@@ -9,7 +9,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="Aguacongas.IdentityServer.Admin.IS4" Version="4.0.0-preview1-0046" />
-		<PackageReference Include="Aguacongas.IdentityServer.EntityFramework.Store.IS4" Version="4.0.0-preew1-0046" />
+		<PackageReference Include="Aguacongas.IdentityServer.EntityFramework.Store.IS4" Version="4.0.0-preview1cd-0046" />
 		<PackageReference Include="Aguacongas.IdentityServer.MongoDb.Store.IS4" Version="4.0.0-preview1-0046" />
 		<PackageReference Include="Aguacongas.IdentityServer.RavenDb.Store.IS4" Version="4.0.0-preview1-0046" />
 		<PackageReference Include="Aguacongas.IdentityServer.Http.Store" Version="4.0.0-preview1-0046" />
@@ -25,7 +25,6 @@
 		<PackageReference Include="Azure.Extensions.AspNetCore.DataProtection.Keys" Version="1.1.0" />
 		<PackageReference Include="Azure.Identity" Version="1.4.1" />
 		<PackageReference Include="IdentityModel.AspNetCore.OAuth2Introspection" Version="5.1.0" />
-		<PackageReference Include="IdentityServer4.AspNetIdentity" Version="4.1.2" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="5.0.10" />
 		<PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="5.0.10" />
 		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="5.0.10" />
