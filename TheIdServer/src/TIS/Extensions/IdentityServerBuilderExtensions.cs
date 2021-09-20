@@ -1,9 +1,9 @@
-﻿// Copyright (c) 2020 @Olivier Lefebvre. All rights reserved.
+﻿// Copyright (c) 2021 @Olivier Lefebvre. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 using Aguacongas.IdentityServer.Admin.Configuration;
 using Aguacongas.IdentityServer.EntityFramework.Store;
 using Aguacongas.IdentityServer.KeysRotation;
-using Aguacongas.IdentityServer.KeysRotation.Extentions;
+using Aguacongas.IdentityServer.KeysRotation.Extensions;
 using Microsoft.Extensions.Configuration;
 using StackExchange.Redis;
 using System;

@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2020 @Olivier Lefebvre. All rights reserved.
+﻿// Copyright (c) 2021 @Olivier Lefebvre. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 using Aguacongas.AspNetCore.Authentication;
 using Aguacongas.IdentityServer.Admin.Services;
@@ -260,7 +260,7 @@ namespace Aguacongas.TheIdServer.Test
                 .AddTransient<IConfiguration>(p => configuration)
                 .AddLogging()
                 .AddTransient<IdentityServer4.Configuration.IdentityServerOptions>()
-                .AddIdentityServer4AdminEntityFrameworkStores(options => options.UseInMemoryDatabase(dbId))
+                .AddTheIdServerAdminEntityFrameworkStores(options => options.UseInMemoryDatabase(dbId))
                 .AddConfigurationEntityFrameworkStores(options => options.UseInMemoryDatabase(dbId))
                 .AddIdentityProviderStore();
 

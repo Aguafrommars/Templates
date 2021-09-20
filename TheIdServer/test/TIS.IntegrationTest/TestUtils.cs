@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2020 @Olivier Lefebvre. All rights reserved.
+﻿// Copyright (c) 2021 @Olivier Lefebvre. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 using Aguacongas.TheIdServer.BlazorApp.Infrastructure.Services;
 using Aguacongas.TheIdServer.BlazorApp.Models;
@@ -130,7 +130,7 @@ namespace Aguacongas.TheIdServer.IntegrationTest
                         configure.AddProvider(new TestLoggerProvider(testOutputHelper));
                     })
                     .AddTransient(p => sut.CreateHandler())
-                    .AddIdentityServer4AdminHttpStores(p =>
+                    .AddAdminHttpStores(p =>
                     {
                         var client = new HttpClient(new BaseAddressAuthorizationMessageHandler(p.GetRequiredService<IAccessTokenProvider>(),
                             p.GetRequiredService<NavigationManager>())

@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2020 @Olivier Lefebvre. All rights reserved.
+﻿// Copyright (c) 2021 @Olivier Lefebvre. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 using Aguacongas.IdentityServer;
 using Aguacongas.IdentityServer.Abstractions;
@@ -14,6 +14,7 @@ using Aguacongas.TheIdServer.BlazorApp.Models;
 using Aguacongas.TheIdServer.BlazorApp.Services;
 using Aguacongas.TheIdServer.Data;
 using Aguacongas.TheIdServer.Models;
+using Aguacongas.TheIdServer.Services;
 using IdentityModel.AspNetCore.OAuth2Introspection;
 using IdentityServer4.Services;
 using IdentityServerHost.Quickstart.UI;
@@ -83,7 +84,7 @@ namespace TIS
 
             if (isProxy)
             {
-                services.AddConfigurationHttpStores(configureOptions);
+                services.AddAdminHttpStores(configureOptions);
             }
             else
             {
@@ -439,17 +440,17 @@ namespace TIS
                         documentStore.SetFindIdentityPropertyForIdentityServerStores();
                         return documentStore.Initialize();
                     })
-                    .AddIdentityServer4AdminRavenDbStores();
+                    .AddTheIdServerRavenDbStores();
 
             }
             else if (DbType == DbTypes.MongoDb)
             {
                 var connectionString = Configuration.GetConnectionString("DefaultConnection");
-                services.AddIdentityServer4AdminMongoDbStores(connectionString);
+                services.AddTheIdServerMongoDbStores(connectionString);
             }
             else
             {
-                services.AddIdentityServer4AdminEntityFrameworkStores(options => options.UseDatabaseFromConfiguration(Configuration))
+                services.AddTheIdServerAdminEntityFrameworkStores(options => options.UseDatabaseFromConfiguration(Configuration))
                     .AddConfigurationEntityFrameworkStores(options => options.UseDatabaseFromConfiguration(Configuration))
                     .AddOperationalEntityFrameworkStores(options => options.UseDatabaseFromConfiguration(Configuration));
             }
