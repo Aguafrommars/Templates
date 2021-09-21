@@ -47,7 +47,7 @@ if (Test-Path env:SRC_BRANCH) {
 Write-Host "src:$src dest: $dest"
 
 # Restore dependencies
-dotnet restore
+dotnet restore TIS.sln
 
 # Get all project list in the solution
 $projectList = dotnet sln list
@@ -78,7 +78,7 @@ if (!$updated) {
 
 # Try build the solution with new packages
 Write-Host "dotnet build -c Release"
-dotnet build -c Release
+dotnet build TIS.sln -c Release
 
 # commit changes
 Write-Host "git config user.name github-actions"
