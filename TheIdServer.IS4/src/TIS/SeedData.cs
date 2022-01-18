@@ -59,8 +59,8 @@ namespace TIS
 
             var roles = new string[]
             {
-                SharedConstants.WRITER,
-                SharedConstants.READER
+                SharedConstants.WRITERPOLICY,
+                SharedConstants.READERPOLICY
             };
             foreach (var role in roles)
             {
