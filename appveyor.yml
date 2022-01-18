@@ -11,15 +11,16 @@ image:
 - Visual Studio 2019
 environment:
   GH_TOKEN: 
-    secure: 0NJdORJRFjpB0dwUYv7bVNsbkldkoBhnvWik/CTOwAF/k9kP+/uTWMFnDcpEpt8E
-  donetsdk: 5.0.402
+    secure: aV5flJ5BOs49dlM4XRpu7t1qa+ajMD5L4hhwlBOv+zff/NlSkdnrmk5nYNsIJCdE
+  donetsdk: 6.0.101
 init:
   - cmd: git config --global core.autocrlf true
 install:
   - ps: Install-Product node ''
-  - ps: .\dotnet-install.ps1 -Version $env:donetsdk
+  - ps: .\dotnet-install.ps1 -Version 5.0.404
   - ps: dotnet tool install --global GitVersion.Tool
   - ps: dotnet gitversion /l console /output buildserver
+  - ps: .\dotnet-install.ps1 -Version $env:donetsdk
   - ps: ./appveyorinit.ps1
 build_script:
   - ps: ./build.ps1
