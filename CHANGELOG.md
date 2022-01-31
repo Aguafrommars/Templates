@@ -1,3 +1,16 @@
+# [2.2.0](https://github.com/Aguafrommars/Templates/compare/2.1.0...2.2.0) (2022-01-29)
+
+
+### Bug Fixes
+
+* update packages ([fdad283](https://github.com/Aguafrommars/Templates/commit/fdad2832ff989f1e64e2aaa05f93cce11ab8dc99))
+* update packages ([ee20d7c](https://github.com/Aguafrommars/Templates/commit/ee20d7c876caefc9ffe88f55018ce11318d4db61))
+
+
+### Features
+
+* new design ([62adaf9](https://github.com/Aguafrommars/Templates/commit/62adaf984fbe0aaadc1530159523a8e6ff69976b))
+
 # [2.1.0](https://github.com/Aguafrommars/Templates/compare/2.0.0...2.1.0) (2022-01-18)
 
 
