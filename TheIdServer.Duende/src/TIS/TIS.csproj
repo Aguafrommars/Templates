@@ -8,19 +8,19 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Aguacongas.IdentityServer.Admin.Duende" Version="4.6.0" />
-		<PackageReference Include="Aguacongas.IdentityServer.EntityFramework.Store.Duende" Version="4.6.0" />
-		<PackageReference Include="Aguacongas.IdentityServer.MongoDb.Store.Duende" Version="4.6.0" />
-		<PackageReference Include="Aguacongas.IdentityServer.RavenDb.Store.Duende" Version="4.6.0" />
-		<PackageReference Include="Aguacongas.IdentityServer.Http.Store" Version="4.6.0" />
-		<PackageReference Include="Aguacongas.IdentityServer.WsFederation.Duende" Version="4.6.0" />
-		<PackageReference Include="Aguacongas.TheIdServer.Authentication" Version="4.6.0" />
-		<PackageReference Include="Aguacongas.TheIdServer.Identity" Version="4.6.0" />
-		<PackageReference Include="Aguacongas.TheIdServer.Migrations.MySql" Version="4.6.0" />
-		<PackageReference Include="Aguacongas.TheIdServer.Migrations.Oracle" Version="4.6.0" />
-		<PackageReference Include="Aguacongas.TheIdServer.Migrations.PostgreSQL" Version="4.6.0" />
-		<PackageReference Include="Aguacongas.TheIdServer.Migrations.Sqlite" Version="4.6.0" />
-		<PackageReference Include="Aguacongas.TheIdServer.Migrations.SqlServer" Version="4.6.0" />
+		<PackageReference Include="Aguacongas.IdentityServer.Admin.Duende" Version="4.6.1" />
+		<PackageReference Include="Aguacongas.IdentityServer.EntityFramework.Store.Duende" Version="4.6.1" />
+		<PackageReference Include="Aguacongas.IdentityServer.MongoDb.Store.Duende" Version="4.6.1" />
+		<PackageReference Include="Aguacongas.IdentityServer.RavenDb.Store.Duende" Version="4.6.1" />
+		<PackageReference Include="Aguacongas.IdentityServer.Http.Store" Version="4.6.1" />
+		<PackageReference Include="Aguacongas.IdentityServer.WsFederation.Duende" Version="4.6.1" />
+		<PackageReference Include="Aguacongas.TheIdServer.Authentication" Version="4.6.1" />
+		<PackageReference Include="Aguacongas.TheIdServer.Identity" Version="4.6.1" />
+		<PackageReference Include="Aguacongas.TheIdServer.Migrations.MySql" Version="4.6.1" />
+		<PackageReference Include="Aguacongas.TheIdServer.Migrations.Oracle" Version="4.6.1" />
+		<PackageReference Include="Aguacongas.TheIdServer.Migrations.PostgreSQL" Version="4.6.1" />
+		<PackageReference Include="Aguacongas.TheIdServer.Migrations.Sqlite" Version="4.6.1" />
+		<PackageReference Include="Aguacongas.TheIdServer.Migrations.SqlServer" Version="4.6.1" />
 		<PackageReference Include="Azure.Extensions.AspNetCore.DataProtection.Blobs" Version="1.2.1" />
 		<PackageReference Include="Azure.Extensions.AspNetCore.DataProtection.Keys" Version="1.1.0" />
 		<PackageReference Include="Azure.Identity" Version="1.5.0" />
