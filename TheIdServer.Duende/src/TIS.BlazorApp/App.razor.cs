@@ -1,12 +1,7 @@
 ﻿// Copyright (c) 2021 @Olivier Lefebvre. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
-using Aguacongas.TheIdServer.BlazorApp.Pages;
 using Microsoft.AspNetCore.Components.Routing;
-using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 
 namespace TIS.BlazorApp
 {
@@ -14,7 +9,7 @@ namespace TIS.BlazorApp
     {
         private readonly List<Assembly> _lazyLoadedAssemblies = new List<Assembly>
         {
-            typeof(Index).Assembly
+            typeof(Aguacongas.TheIdServer.BlazorApp.Pages.Index).Assembly
         };
 
         private readonly string[] _pageKindList = new[]

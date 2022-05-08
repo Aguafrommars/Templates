@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2021 @Olivier Lefebvre. All rights reserved.
-// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+﻿// Project: Aguafrommars/TheIdServer
+// Copyright (c) 2022 @Olivier Lefebvre
 using Aguacongas.IdentityServer.EntityFramework.Store;
 using Aguacongas.IdentityServer.Store;
 using Aguacongas.TheIdServer.Data;
@@ -9,27 +9,25 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Linq;
 using System.Security.Claims;
+using System.Text.Json;
 using System.Threading.Tasks;
 using TIS.Models;
 using Entity = Aguacongas.IdentityServer.Store.Entity;
+using ISModels = IdentityServer4.Models;
 
 namespace TIS
 {
     static class SeedData
     {
-        public static void EnsureSeedData(IConfiguration configuration)
+        public static void EnsureSeedData(IConfiguration configuration, IServiceProvider services)
         {
-            var services = new ServiceCollection();
-            var startup = new Startup(configuration, null);
-            startup.ConfigureServices(services);
-
-            using var serviceProvider = services.BuildServiceProvider();
-            using var scope = serviceProvider.CreateScope();
+            using var scope = services.CreateScope();
 
             var dbType = configuration.GetValue<DbTypes>("DbType");
             if (dbType != DbTypes.InMemory && dbType != DbTypes.RavenDb && dbType != DbTypes.MongoDb)
@@ -44,17 +42,15 @@ namespace TIS
                 appcontext.Database.Migrate();
             }
 
-            if (configuration.GetValue<bool>("Seed"))
-            {
-                SeedUsers(scope, configuration);
-                SeedConfiguration(scope, configuration);
-            }
+            SeedUsers(scope, configuration);
+            SeedConfiguration(scope, configuration);
         }
 
         public static void SeedUsers(IServiceScope scope, IConfiguration configuration)
         {
             var provider = scope.ServiceProvider;
-
+            var loggerFactory = provider.GetRequiredService<ILoggerFactory>();
+            var logger = loggerFactory.CreateLogger("SeedUsers");
             var roleMgr = provider.GetRequiredService<RoleManager<IdentityRole>>();
 
             var roles = new string[]
@@ -81,7 +77,7 @@ namespace TIS
                 var existing = userMgr.FindByNameAsync(user.UserName).GetAwaiter().GetResult();
                 if (existing != null)
                 {
-                    Console.WriteLine($"{user.UserName} already exists");
+                    logger.LogInformation("{UserName} already exists", user.UserName);
                     continue;
                 }
                 var pwd = configuration.GetValue<string>($"InitialData:Users:{index}:Password");
@@ -99,7 +95,7 @@ namespace TIS
                 ExcuteAndCheckResult(() => userMgr.AddToRolesAsync(user, roleList))
                     .GetAwaiter().GetResult();
 
-                Console.WriteLine($"{user.UserName} created");
+                logger.LogInformation("{UserName} created", user.UserName);
 
                 index++;
             }
@@ -113,6 +109,72 @@ namespace TIS
             SeedApiScopes(configuration, provider);
             SeedApis(configuration, provider);
             SeedRelyingParties(configuration, provider);
+            SeedLocalization(provider);
+        }
+
+        private static void SeedLocalization(IServiceProvider provider)
+        {
+            var cultureFiles = Directory.EnumerateFiles(".", "Localization-*.json");
+            foreach (var file in cultureFiles)
+            {
+                SeedCultureFile(provider, file);
+            }
+        }
+
+        private static void SeedCultureFile(IServiceProvider provider, string file)
+        {
+            var cultureName = Path.GetFileNameWithoutExtension(file).Split("-")[1];
+            var cultureStore = provider.GetRequiredService<IAdminStore<Entity.Culture>>();
+            var localizedResouceStore = provider.GetRequiredService<IAdminStore<Entity.LocalizedResource>>();
+
+            var culturePage = cultureStore.GetAsync(new PageRequest
+            {
+                Filter = $"Id eq '{cultureName}'",
+                Expand = "Resources"
+            }).GetAwaiter().GetResult();
+            Entity.Culture culture;
+            if (culturePage.Count == 0)
+            {
+                culture = new Entity.Culture
+                {
+                    Id = cultureName,
+                    Resources = new List<Entity.LocalizedResource>()
+                };
+                try
+                {
+                    cultureStore.CreateAsync(culture).GetAwaiter().GetResult();
+                }
+                catch (ArgumentException)
+                {
+                    // key already exists
+                }
+            }
+            else
+            {
+                culture = culturePage.Items.First();
+            }
+
+            var exsitings = culture.Resources.ToList();
+            var resources = JsonSerializer.Deserialize<IEnumerable<Entity.LocalizedResource>>(File.ReadAllText(file), new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            });
+
+            foreach (var resource in resources)
+            {
+                if (!exsitings.Any(r => r.Key == resource.Key))
+                {
+                    resource.CultureId = culture.Id;
+                    try
+                    {
+                        localizedResouceStore.CreateAsync(resource).GetAwaiter().GetResult();
+                    }
+                    catch (ArgumentException)
+                    {
+                        // key already exists
+                    }
+                }
+            }
         }
 
         private static void SeedApis(IConfiguration configuration, IServiceProvider provider)
@@ -123,82 +185,121 @@ namespace TIS
             var apiApiScopeStore = provider.GetRequiredService<IAdminStore<Entity.ApiApiScope>>();
             var apiPropertyStore = provider.GetRequiredService<IAdminStore<Entity.ApiProperty>>();
 
+            var loggerFactory = provider.GetRequiredService<ILoggerFactory>();
+            var logger = loggerFactory.CreateLogger("SeedApis");
+
             foreach (var resource in Config.GetApis(configuration))
             {
                 if (apiStore.GetAsync(resource.Name, null).GetAwaiter().GetResult() != null)
                 {
+                    logger.LogInformation("Api resource {Name} already exists", resource.Name);
                     continue;
                 }
 
-                apiStore.CreateAsync(new Entity.ProtectResource
+                try
                 {
-                    Description = resource.Description,
-                    DisplayName = resource.DisplayName,
-                    Enabled = resource.Enabled,
-                    Id = resource.Name,
-                }).GetAwaiter().GetResult();
+                    apiStore.CreateAsync(new Entity.ProtectResource
+                    {
+                        Description = resource.Description,
+                        DisplayName = resource.DisplayName,
+                        Enabled = resource.Enabled,
+                        Id = resource.Name,
+                    }).GetAwaiter().GetResult();
+                }
+                catch (ArgumentException)
+                {
+                    // silent
+                }
                 SeedApiClaims(apiClaimStore, resource);
                 SeedApiSecrets(apiSecretStore, resource);
                 SeedApiApiScopes(apiApiScopeStore, resource);
                 SeedApiProperties(apiPropertyStore, resource);
 
-                Console.WriteLine($"Add api resource {resource.DisplayName}");
+                logger.LogInformation("Add api resource {DisplayName}", resource.DisplayName);
             }
         }
 
-        private static void SeedApiProperties(IAdminStore<Entity.ApiProperty> apiPropertyStore, IdentityServer4.Models.ApiResource resource)
+        private static void SeedApiProperties(IAdminStore<Entity.ApiProperty> apiPropertyStore, ISModels.ApiResource resource)
         {
             foreach (var property in resource.Properties)
             {
-                apiPropertyStore.CreateAsync(new Entity.ApiProperty
+                try
                 {
-                    ApiId = resource.Name,
-                    Id = Guid.NewGuid().ToString(),
-                    Key = property.Key,
-                    Value = property.Value
-                }).GetAwaiter().GetResult();
+                    apiPropertyStore.CreateAsync(new Entity.ApiProperty
+                    {
+                        ApiId = resource.Name,
+                        Id = Guid.NewGuid().ToString(),
+                        Key = property.Key,
+                        Value = property.Value
+                    }).GetAwaiter().GetResult();
+                }
+                catch (ArgumentException)
+                {
+                    // silent
+                }
             }
         }
 
-        private static void SeedApiApiScopes(IAdminStore<Entity.ApiApiScope> apiApiScopeStore, IdentityServer4.Models.ApiResource resource)
+        private static void SeedApiApiScopes(IAdminStore<Entity.ApiApiScope> apiApiScopeStore, ISModels.ApiResource resource)
         {
             foreach (var apiScope in resource.Scopes)
             {
-                apiApiScopeStore.CreateAsync(new Entity.ApiApiScope
+                try
                 {
-                    ApiId = resource.Name,
-                    ApiScopeId = apiScope,
-                    Id = Guid.NewGuid().ToString()
-                }).GetAwaiter().GetResult();
+                    apiApiScopeStore.CreateAsync(new Entity.ApiApiScope
+                    {
+                        ApiId = resource.Name,
+                        ApiScopeId = apiScope,
+                        Id = Guid.NewGuid().ToString()
+                    }).GetAwaiter().GetResult();
+                }
+                catch (ArgumentException)
+                {
+                    // silent
+                }
             }
         }
 
-        private static void SeedApiSecrets(IAdminStore<Entity.ApiSecret> apiSecretStore, IdentityServer4.Models.ApiResource resource)
+        private static void SeedApiSecrets(IAdminStore<Entity.ApiSecret> apiSecretStore, ISModels.ApiResource resource)
         {
             foreach (var secret in resource.ApiSecrets)
             {
-                apiSecretStore.CreateAsync(new Entity.ApiSecret
+                try
                 {
-                    ApiId = resource.Name,
-                    Expiration = secret.Expiration,
-                    Description = secret.Description,
-                    Id = Guid.NewGuid().ToString(),
-                    Type = secret.Type,
-                    Value = secret.Value
-                }).GetAwaiter().GetResult();
+                    apiSecretStore.CreateAsync(new Entity.ApiSecret
+                    {
+                        ApiId = resource.Name,
+                        Expiration = secret.Expiration,
+                        Description = secret.Description,
+                        Id = Guid.NewGuid().ToString(),
+                        Type = secret.Type,
+                        Value = secret.Value
+                    }).GetAwaiter().GetResult();
+                }
+                catch (ArgumentException)
+                {
+                    // silent
+                }
             }
         }
 
-        private static void SeedApiClaims(IAdminStore<Entity.ApiClaim> apiClaimStore, IdentityServer4.Models.ApiResource resource)
+        private static void SeedApiClaims(IAdminStore<Entity.ApiClaim> apiClaimStore, ISModels.ApiResource resource)
         {
             foreach (var claim in resource.UserClaims)
             {
-                apiClaimStore.CreateAsync(new Entity.ApiClaim
+                try
                 {
-                    ApiId = resource.Name,
-                    Id = Guid.NewGuid().ToString(),
-                    Type = claim
-                }).GetAwaiter().GetResult();
+                    apiClaimStore.CreateAsync(new Entity.ApiClaim
+                    {
+                        ApiId = resource.Name,
+                        Id = Guid.NewGuid().ToString(),
+                        Type = claim
+                    }).GetAwaiter().GetResult();
+                }
+                catch (ArgumentException)
+                {
+                    // silent
+                }
             }
         }
 
@@ -207,55 +308,80 @@ namespace TIS
             var apiScopeStore = provider.GetRequiredService<IAdminStore<Entity.ApiScope>>();
             var apiScopeClaimStore = provider.GetRequiredService<IAdminStore<Entity.ApiScopeClaim>>();
             var apiScopePropertyStore = provider.GetRequiredService<IAdminStore<Entity.ApiScopeProperty>>();
+
+            var loggerFactory = provider.GetRequiredService<ILoggerFactory>();
+            var logger = loggerFactory.CreateLogger("SeedApiScopes");
+
             foreach (var resource in Config.GetApiScopes(configuration))
             {
                 if (apiScopeStore.GetAsync(resource.Name, null).GetAwaiter().GetResult() != null)
                 {
+                    logger.LogInformation("Api scope {Name} already exists", resource.Name);
                     continue;
                 }
-
-                apiScopeStore.CreateAsync(new Entity.ApiScope
+                try
                 {
-                    Description = resource.Description,
-                    DisplayName = resource.DisplayName,
-                    Emphasize = resource.Emphasize,
-                    Enabled = resource.Enabled,
-                    Id = resource.Name,
-                    Required = resource.Required,
-                    ShowInDiscoveryDocument = resource.ShowInDiscoveryDocument
-                }).GetAwaiter().GetResult();
+                    apiScopeStore.CreateAsync(new Entity.ApiScope
+                    {
+                        Description = resource.Description,
+                        DisplayName = resource.DisplayName,
+                        Emphasize = resource.Emphasize,
+                        Enabled = resource.Enabled,
+                        Id = resource.Name,
+                        Required = resource.Required,
+                        ShowInDiscoveryDocument = resource.ShowInDiscoveryDocument
+                    }).GetAwaiter().GetResult();
+                }
+                catch (ArgumentException)
+                {
+                    // silent
+                }
 
                 SeedApiScopeClaims(apiScopeClaimStore, resource);
                 SeedApiScopeProperties(apiScopePropertyStore, resource);
 
-                Console.WriteLine($"Add api scope resource {resource.DisplayName}");
+                logger.LogInformation("Add api scope resource {DisplayName}", resource.DisplayName);
             }
         }
 
-        private static void SeedApiScopeProperties(IAdminStore<Entity.ApiScopeProperty> apiScopePropertyStore, IdentityServer4.Models.ApiScope resource)
+        private static void SeedApiScopeProperties(IAdminStore<Entity.ApiScopeProperty> apiScopePropertyStore, ISModels.ApiScope resource)
         {
             foreach (var property in resource.Properties)
             {
-                apiScopePropertyStore.CreateAsync(new Entity.ApiScopeProperty
+                try
                 {
-                    ApiScopeId = resource.Name,
-                    Id = Guid.NewGuid().ToString(),
-                    Key = property.Key,
-                    Value = property.Value
-                }).GetAwaiter().GetResult();
+                    apiScopePropertyStore.CreateAsync(new Entity.ApiScopeProperty
+                    {
+                        ApiScopeId = resource.Name,
+                        Id = Guid.NewGuid().ToString(),
+                        Key = property.Key,
+                        Value = property.Value
+                    }).GetAwaiter().GetResult();
+                }
+                catch (ArgumentException)
+                {
+                    // silent
+                }
             }
         }
 
-        private static void SeedApiScopeClaims(IAdminStore<Entity.ApiScopeClaim> apiScopeClaimStore, IdentityServer4.Models.ApiScope resource)
+        private static void SeedApiScopeClaims(IAdminStore<Entity.ApiScopeClaim> apiScopeClaimStore, ISModels.ApiScope resource)
         {
             foreach (var claim in resource.UserClaims)
             {
-                apiScopeClaimStore.CreateAsync(new Entity.ApiScopeClaim
+                try
                 {
-                    ApiScopeId = resource.Name,
-                    Id = Guid.NewGuid().ToString(),
-                    Type = claim
-                }).GetAwaiter().GetResult();
+                    apiScopeClaimStore.CreateAsync(new Entity.ApiScopeClaim
+                    {
+                        ApiScopeId = resource.Name,
+                        Id = Guid.NewGuid().ToString(),
+                        Type = claim
+                    }).GetAwaiter().GetResult();
+                }
+                catch (ArgumentException)
+                {
+                    // silent
+                }
             }
         }
 
@@ -264,54 +390,81 @@ namespace TIS
             var identityStore = provider.GetRequiredService<IAdminStore<Entity.IdentityResource>>();
             var identityClaimStore = provider.GetRequiredService<IAdminStore<Entity.IdentityClaim>>();
             var identityPropertyStore = provider.GetRequiredService<IAdminStore<Entity.IdentityProperty>>();
+
+            var loggerFactory = provider.GetRequiredService<ILoggerFactory>();
+            var logger = loggerFactory.CreateLogger("SeedIdentities");
+
             foreach (var resource in Config.GetIdentityResources())
             {
                 if (identityStore.GetAsync(resource.Name, null).GetAwaiter().GetResult() != null)
                 {
+                    logger.LogInformation("Identity resouce {Name} already exists", resource.Name);
                     continue;
                 }
 
-                identityStore.CreateAsync(new Entity.IdentityResource
+                try
                 {
-                    Description = resource.Description,
-                    DisplayName = resource.DisplayName,
-                    Emphasize = resource.Emphasize,
-                    Enabled = resource.Enabled,
-                    Id = resource.Name,
-                    Required = resource.Required,
-                    ShowInDiscoveryDocument = resource.ShowInDiscoveryDocument
-                }).GetAwaiter().GetResult();
+                    identityStore.CreateAsync(new Entity.IdentityResource
+                    {
+                        Description = resource.Description,
+                        DisplayName = resource.DisplayName,
+                        Emphasize = resource.Emphasize,
+                        Enabled = resource.Enabled,
+                        Id = resource.Name,
+                        Required = resource.Required,
+                        ShowInDiscoveryDocument = resource.ShowInDiscoveryDocument
+                    }).GetAwaiter().GetResult();
+                }
+                catch (ArgumentException)
+                {
+                    // silent
+                }
                 SeedIdentityClaims(identityClaimStore, resource);
                 SeedIdentityProperties(identityPropertyStore, resource);
 
-                Console.WriteLine($"Add identity resource {resource.DisplayName}");
+                logger.LogInformation("Add identity resource {DisplayName}", resource.DisplayName);
             }
         }
 
-        private static void SeedIdentityProperties(IAdminStore<Entity.IdentityProperty> identityPropertyStore, IdentityServer4.Models.IdentityResource resource)
+        private static void SeedIdentityProperties(IAdminStore<Entity.IdentityProperty> identityPropertyStore, ISModels.IdentityResource resource)
         {
             foreach (var property in resource.Properties)
             {
-                identityPropertyStore.CreateAsync(new Entity.IdentityProperty
+                try
                 {
-                    Id = Guid.NewGuid().ToString(),
-                    IdentityId = resource.Name,
-                    Key = property.Key,
-                    Value = property.Value
-                }).GetAwaiter().GetResult();
+                    identityPropertyStore.CreateAsync(new Entity.IdentityProperty
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        IdentityId = resource.Name,
+                        Key = property.Key,
+                        Value = property.Value
+                    }).GetAwaiter().GetResult();
+
+                }
+                catch (ArgumentException)
+                {
+                    // silent
+                }
             }
         }
 
-        private static void SeedIdentityClaims(IAdminStore<Entity.IdentityClaim> identityClaimStore, IdentityServer4.Models.IdentityResource resource)
+        private static void SeedIdentityClaims(IAdminStore<Entity.IdentityClaim> identityClaimStore, ISModels.IdentityResource resource)
         {
             foreach (var claim in resource.UserClaims)
             {
-                identityClaimStore.CreateAsync(new Entity.IdentityClaim
+                try
                 {
-                    Id = Guid.NewGuid().ToString(),
-                    IdentityId = resource.Name,
-                    Type = claim
-                }).GetAwaiter().GetResult();
+                    identityClaimStore.CreateAsync(new Entity.IdentityClaim
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        IdentityId = resource.Name,
+                        Type = claim
+                    }).GetAwaiter().GetResult();
+                }
+                catch (ArgumentException)
+                {
+                    // silent
+                }
             }
         }
 
@@ -326,53 +479,68 @@ namespace TIS
             var clientUriStore = provider.GetRequiredService<IAdminStore<Entity.ClientUri>>();
             var clientPropertyStore = provider.GetRequiredService<IAdminStore<Entity.ClientProperty>>();
 
+#if DUENDE
+            var clientAllowedIdentityTokenSigningAlgorithmStore = provider.GetRequiredService<IAdminStore<Entity.ClientAllowedIdentityTokenSigningAlgorithm>>();
+#endif
+
+            var loggerFactory = provider.GetRequiredService<ILoggerFactory>();
+            var logger = loggerFactory.CreateLogger("SeedClients");
+
             foreach (var client in Config.GetClients(configuration))
             {
                 if (clientStore.GetAsync(client.ClientId, null).GetAwaiter().GetResult() != null)
                 {
+                    logger.LogInformation("Client {ClientId} already exists", client.ClientId);
                     continue;
                 }
 
-                clientStore.CreateAsync(new Entity.Client
+                try
                 {
-                    AbsoluteRefreshTokenLifetime = client.AbsoluteRefreshTokenLifetime,
-                    AccessTokenLifetime = client.AccessTokenLifetime,
-                    AccessTokenType = (int)client.AccessTokenType,
-                    AllowAccessTokensViaBrowser = client.AllowAccessTokensViaBrowser,
-                    AllowOfflineAccess = client.AllowOfflineAccess,
-                    AllowPlainTextPkce = client.AllowPlainTextPkce,
-                    AllowRememberConsent = client.AllowRememberConsent,
-                    AlwaysIncludeUserClaimsInIdToken = client.AlwaysIncludeUserClaimsInIdToken,
-                    AlwaysSendClientClaims = client.AlwaysSendClientClaims,
-                    AuthorizationCodeLifetime = client.AuthorizationCodeLifetime,
-                    BackChannelLogoutSessionRequired = client.BackChannelLogoutSessionRequired,
-                    BackChannelLogoutUri = client.BackChannelLogoutUri,
-                    ClientClaimsPrefix = client.ClientClaimsPrefix,
-                    ClientName = client.ClientName,
-                    ClientUri = client.ClientUri,
-                    ConsentLifetime = client.ConsentLifetime,
-                    Description = client.Description,
-                    DeviceCodeLifetime = client.DeviceCodeLifetime,
-                    Enabled = client.Enabled,
-                    EnableLocalLogin = client.EnableLocalLogin,
-                    FrontChannelLogoutSessionRequired = client.FrontChannelLogoutSessionRequired,
-                    FrontChannelLogoutUri = client.FrontChannelLogoutUri,
-                    Id = client.ClientId,
-                    IdentityTokenLifetime = client.IdentityTokenLifetime,
-                    IncludeJwtId = client.IncludeJwtId,
-                    LogoUri = client.LogoUri,
-                    PairWiseSubjectSalt = client.PairWiseSubjectSalt,
-                    ProtocolType = client.ProtocolType,
-                    RefreshTokenExpiration = (int)client.RefreshTokenExpiration,
-                    RefreshTokenUsage = (int)client.RefreshTokenUsage,
-                    RequireClientSecret = client.RequireClientSecret,
-                    RequireConsent = client.RequireConsent,
-                    RequirePkce = client.RequirePkce,
-                    SlidingRefreshTokenLifetime = client.SlidingRefreshTokenLifetime,
-                    UpdateAccessTokenClaimsOnRefresh = client.UpdateAccessTokenClaimsOnRefresh,
-                    UserCodeType = client.UserCodeType,
-                    UserSsoLifetime = client.UserSsoLifetime
-                }).GetAwaiter().GetResult();
+                    clientStore.CreateAsync(new Entity.Client
+                    {
+                        AbsoluteRefreshTokenLifetime = client.AbsoluteRefreshTokenLifetime,
+                        AccessTokenLifetime = client.AccessTokenLifetime,
+                        AccessTokenType = (int)client.AccessTokenType,
+                        AllowAccessTokensViaBrowser = client.AllowAccessTokensViaBrowser,
+                        AllowOfflineAccess = client.AllowOfflineAccess,
+                        AllowPlainTextPkce = client.AllowPlainTextPkce,
+                        AllowRememberConsent = client.AllowRememberConsent,
+                        AlwaysIncludeUserClaimsInIdToken = client.AlwaysIncludeUserClaimsInIdToken,
+                        AlwaysSendClientClaims = client.AlwaysSendClientClaims,
+                        AuthorizationCodeLifetime = client.AuthorizationCodeLifetime,
+                        BackChannelLogoutSessionRequired = client.BackChannelLogoutSessionRequired,
+                        BackChannelLogoutUri = client.BackChannelLogoutUri,
+                        ClientClaimsPrefix = client.ClientClaimsPrefix,
+                        ClientName = client.ClientName,
+                        ClientUri = client.ClientUri,
+                        ConsentLifetime = client.ConsentLifetime,
+                        Description = client.Description,
+                        DeviceCodeLifetime = client.DeviceCodeLifetime,
+                        Enabled = client.Enabled,
+                        EnableLocalLogin = client.EnableLocalLogin,
+                        FrontChannelLogoutSessionRequired = client.FrontChannelLogoutSessionRequired,
+                        FrontChannelLogoutUri = client.FrontChannelLogoutUri,
+                        Id = client.ClientId,
+                        IdentityTokenLifetime = client.IdentityTokenLifetime,
+                        IncludeJwtId = client.IncludeJwtId,
+                        LogoUri = client.LogoUri,
+                        PairWiseSubjectSalt = client.PairWiseSubjectSalt,
+                        ProtocolType = client.ProtocolType,
+                        RefreshTokenExpiration = (int)client.RefreshTokenExpiration,
+                        RefreshTokenUsage = (int)client.RefreshTokenUsage,
+                        RequireClientSecret = client.RequireClientSecret,
+                        RequireConsent = client.RequireConsent,
+                        RequirePkce = client.RequirePkce,
+                        SlidingRefreshTokenLifetime = client.SlidingRefreshTokenLifetime,
+                        UpdateAccessTokenClaimsOnRefresh = client.UpdateAccessTokenClaimsOnRefresh,
+                        UserCodeType = client.UserCodeType,
+                        UserSsoLifetime = client.UserSsoLifetime
+                    }).GetAwaiter().GetResult();
+                }
+                catch (ArgumentException)
+                {
+                    // silent
+                }
                 SeedClientGrantType(clientGrantTypeStore, client);
                 SeedClientScopes(clientScopeStore, client);
                 SeedClientClaims(clientClaimStore, client);
@@ -380,12 +548,36 @@ namespace TIS
                 SeedClientRestrictions(clientIdpRestrictionStore, client);
                 SeedClientProperties(clientPropertyStore, client);
                 SeedClientUris(clientUriStore, client);
+#if DUENDE
+                SeedClientAllowedIdentityTokenSigningAlgorithms(clientAllowedIdentityTokenSigningAlgorithmStore, client);
+#endif
 
-                Console.WriteLine($"Add client {client.ClientName}");
+                logger.LogInformation("Add client {ClientName}", client.ClientName);
             }
         }
 
-        private static void SeedClientUris(IAdminStore<Entity.ClientUri> clientUriStore, IdentityServer4.Models.Client client)
+#if DUENDE
+        private static void SeedClientAllowedIdentityTokenSigningAlgorithms(IAdminStore<ClientAllowedIdentityTokenSigningAlgorithm> clientAllowedIdentityTokenSigningAlgorithmStore, ISModels.Client client)
+        {
+            foreach (var algorythm in client.AllowedIdentityTokenSigningAlgorithms.Where(a => IdentityServerConstants.SupportedSigningAlgorithms.Contains(a)))
+            {
+                try
+                {
+                    clientAllowedIdentityTokenSigningAlgorithmStore.CreateAsync(new ClientAllowedIdentityTokenSigningAlgorithm
+                    {
+                        ClientId = client.ClientId,
+                        Id = Guid.NewGuid().ToString(),
+                        Algorithm = algorythm
+                    }).GetAwaiter().GetResult();
+                }
+                catch (ArgumentException)
+                {
+                    // silent
+                }
+            }
+        }
+#endif
+        private static void SeedClientUris(IAdminStore<Entity.ClientUri> clientUriStore, ISModels.Client client)
         {
             var uris = client.RedirectUris.Select(o => new Entity.ClientUri
             {
@@ -439,90 +631,139 @@ namespace TIS
 
             foreach (var uri in uris)
             {
-                clientUriStore.CreateAsync(uri).GetAwaiter().GetResult();
+                try
+                {
+                    clientUriStore.CreateAsync(uri).GetAwaiter().GetResult();
+                }
+                catch (ArgumentException)
+                {
+                    // silent
+                }
             }
         }
 
-        private static void SeedClientProperties(IAdminStore<Entity.ClientProperty> clientPropertyStore, IdentityServer4.Models.Client client)
+        private static void SeedClientProperties(IAdminStore<Entity.ClientProperty> clientPropertyStore, ISModels.Client client)
         {
             foreach (var property in client.Properties)
             {
-                clientPropertyStore.CreateAsync(new Entity.ClientProperty
+                try
                 {
-                    ClientId = client.ClientId,
-                    Id = Guid.NewGuid().ToString(),
-                    Key = property.Key,
-                    Value = property.Value
-                }).GetAwaiter().GetResult();
+                    clientPropertyStore.CreateAsync(new Entity.ClientProperty
+                    {
+                        ClientId = client.ClientId,
+                        Id = Guid.NewGuid().ToString(),
+                        Key = property.Key,
+                        Value = property.Value
+                    }).GetAwaiter().GetResult();
+                }
+                catch (ArgumentException)
+                {
+                    // silent
+                }
             }
         }
 
-        private static void SeedClientRestrictions(IAdminStore<Entity.ClientIdpRestriction> clientIdpRestrictionStore, IdentityServer4.Models.Client client)
+        private static void SeedClientRestrictions(IAdminStore<Entity.ClientIdpRestriction> clientIdpRestrictionStore, ISModels.Client client)
         {
             foreach (var restriction in client.IdentityProviderRestrictions)
             {
-                clientIdpRestrictionStore.CreateAsync(new Entity.ClientIdpRestriction
+                try
                 {
-                    ClientId = client.ClientId,
-                    Id = Guid.NewGuid().ToString(),
-                    Provider = restriction
-                }).GetAwaiter().GetResult();
+                    clientIdpRestrictionStore.CreateAsync(new Entity.ClientIdpRestriction
+                    {
+                        ClientId = client.ClientId,
+                        Id = Guid.NewGuid().ToString(),
+                        Provider = restriction
+                    }).GetAwaiter().GetResult();
+                }
+                catch (ArgumentException)
+                {
+                    // silent
+                }
             }
         }
 
-        private static void SeedClientSecrets(IAdminStore<Entity.ClientSecret> clientSecretStore, IdentityServer4.Models.Client client)
+        private static void SeedClientSecrets(IAdminStore<Entity.ClientSecret> clientSecretStore, ISModels.Client client)
         {
             foreach (var secret in client.ClientSecrets)
             {
-                clientSecretStore.CreateAsync(new Entity.ClientSecret
+                try
                 {
-                    ClientId = client.ClientId,
-                    Description = secret.Description,
-                    Expiration = secret.Expiration,
-                    Id = Guid.NewGuid().ToString(),
-                    Type = secret.Type,
-                    Value = secret.Value
-                }).GetAwaiter().GetResult();
+                    clientSecretStore.CreateAsync(new Entity.ClientSecret
+                    {
+                        ClientId = client.ClientId,
+                        Description = secret.Description,
+                        Expiration = secret.Expiration,
+                        Id = Guid.NewGuid().ToString(),
+                        Type = secret.Type,
+                        Value = secret.Value
+                    }).GetAwaiter().GetResult();
+                }
+                catch (ArgumentException)
+                {
+                    // silent
+                }
             }
         }
 
-        private static void SeedClientClaims(IAdminStore<Entity.ClientClaim> clientClaimStore, IdentityServer4.Models.Client client)
+        private static void SeedClientClaims(IAdminStore<Entity.ClientClaim> clientClaimStore, ISModels.Client client)
         {
             foreach (var claim in client.Claims)
             {
-                clientClaimStore.CreateAsync(new Entity.ClientClaim
+                try
                 {
-                    ClientId = client.ClientId,
-                    Id = Guid.NewGuid().ToString(),
-                    Type = claim.Type,
-                    Value = claim.Value
-                }).GetAwaiter().GetResult();
+                    clientClaimStore.CreateAsync(new Entity.ClientClaim
+                    {
+                        ClientId = client.ClientId,
+                        Id = Guid.NewGuid().ToString(),
+                        Type = claim.Type,
+                        Value = claim.Value
+                    }).GetAwaiter().GetResult();
+                }
+                catch (ArgumentException)
+                {
+                    // silent
+                }
             }
         }
 
-        private static void SeedClientScopes(IAdminStore<Entity.ClientScope> clientScopeStore, IdentityServer4.Models.Client client)
+        private static void SeedClientScopes(IAdminStore<Entity.ClientScope> clientScopeStore, ISModels.Client client)
         {
             foreach (var clientScope in client.AllowedScopes)
             {
-                clientScopeStore.CreateAsync(new Entity.ClientScope
+                try
                 {
-                    ClientId = client.ClientId,
-                    Scope = clientScope,
-                    Id = Guid.NewGuid().ToString()
-                }).GetAwaiter().GetResult();
+                    clientScopeStore.CreateAsync(new Entity.ClientScope
+                    {
+                        ClientId = client.ClientId,
+                        Scope = clientScope,
+                        Id = Guid.NewGuid().ToString()
+                    }).GetAwaiter().GetResult();
+                }
+                catch (ArgumentException)
+                {
+                    // silent
+                }
             }
         }
 
-        private static void SeedClientGrantType(IAdminStore<Entity.ClientGrantType> clientGrantTypeStore, IdentityServer4.Models.Client client)
+        private static void SeedClientGrantType(IAdminStore<Entity.ClientGrantType> clientGrantTypeStore, ISModels.Client client)
         {
             foreach (var grantType in client.AllowedGrantTypes)
             {
-                clientGrantTypeStore.CreateAsync(new Entity.ClientGrantType
+                try
                 {
-                    ClientId = client.ClientId,
-                    GrantType = grantType,
-                    Id = Guid.NewGuid().ToString()
-                }).GetAwaiter().GetResult();
+                    clientGrantTypeStore.CreateAsync(new Entity.ClientGrantType
+                    {
+                        ClientId = client.ClientId,
+                        GrantType = grantType,
+                        Id = Guid.NewGuid().ToString()
+                    }).GetAwaiter().GetResult();
+                }
+                catch (ArgumentException)
+                {
+                    // silent
+                }
             }
         }
 
@@ -531,24 +772,37 @@ namespace TIS
             var relyingPartyStore = provider.GetRequiredService<IAdminStore<Entity.RelyingParty>>();
             var relyingPartyClaimMappingStore = provider.GetRequiredService<IAdminStore<Entity.RelyingPartyClaimMapping>>();
 
+            var loggerFactory = provider.GetRequiredService<ILoggerFactory>();
+            var logger = loggerFactory.CreateLogger("SeedRelyingParties");
+
             foreach (var relyingParty in Config.GetRelyingParties(configuration))
             {
                 if (relyingPartyStore.GetAsync(relyingParty.Id, null).GetAwaiter().GetResult() != null)
                 {
+                    logger.LogInformation("RelyingParty {Id} already exists", relyingParty.Id);
                     continue;
                 }
 
-                relyingPartyStore.CreateAsync(new Entity.RelyingParty
+                try
                 {
-                    Id = relyingParty.Id,
-                    Description = relyingParty.Description,
-                    DigestAlgorithm = relyingParty.DigestAlgorithm,
-                    EncryptionCertificate = relyingParty.EncryptionCertificate,
-                    SamlNameIdentifierFormat = relyingParty.SamlNameIdentifierFormat,
-                    SignatureAlgorithm = relyingParty.SignatureAlgorithm,
-                    TokenType = relyingParty.TokenType
-                }).GetAwaiter().GetResult();
+                    relyingPartyStore.CreateAsync(new Entity.RelyingParty
+                    {
+                        Id = relyingParty.Id,
+                        Description = relyingParty.Description,
+                        DigestAlgorithm = relyingParty.DigestAlgorithm,
+                        EncryptionCertificate = relyingParty.EncryptionCertificate,
+                        SamlNameIdentifierFormat = relyingParty.SamlNameIdentifierFormat,
+                        SignatureAlgorithm = relyingParty.SignatureAlgorithm,
+                        TokenType = relyingParty.TokenType
+                    }).GetAwaiter().GetResult();
+                }
+                catch (ArgumentException)
+                {
+                    // silent
+                }
                 SeedRelyingPartyClaimMappings(relyingPartyClaimMappingStore, relyingParty);
+
+                logger.LogInformation("Add RelyingParty {Id}", relyingParty.Id);
             }
         }
 
@@ -561,23 +815,33 @@ namespace TIS
 
             foreach (var mapping in relyingParty.ClaimMappings)
             {
-                relyingPartyClaimMappingStore.CreateAsync(new Entity.RelyingPartyClaimMapping
+                try
                 {
-                    FromClaimType = mapping.FromClaimType,
-                    Id = Guid.NewGuid().ToString(),
-                    RelyingPartyId = relyingParty.Id,
-                    ToClaimType = mapping.ToClaimType
-                }).GetAwaiter().GetResult();
+                    relyingPartyClaimMappingStore.CreateAsync(new Entity.RelyingPartyClaimMapping
+                    {
+                        FromClaimType = mapping.FromClaimType,
+                        Id = Guid.NewGuid().ToString(),
+                        RelyingPartyId = relyingParty.Id,
+                        ToClaimType = mapping.ToClaimType
+                    }).GetAwaiter().GetResult();
+                }
+                catch (ArgumentException)
+                {
+                    // silent
+                }
             }
         }
 
-        [SuppressMessage("Major Code Smell", "S112:General exceptions should never be thrown", Justification = "Seeding")]
         private static async Task ExcuteAndCheckResult(Func<Task<IdentityResult>> action)
         {
             var result = await action.Invoke();
             if (!result.Succeeded)
             {
-                throw new Exception(result.Errors.First().Description);
+                var error = result.Errors.First();
+                if (error.Code != "DuplicateUserName")
+                {
+                    throw new InvalidOperationException($"{error.Description} code: {error.Code}");
+                }
             }
         }
     }

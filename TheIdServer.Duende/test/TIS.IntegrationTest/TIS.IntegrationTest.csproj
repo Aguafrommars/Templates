@@ -30,4 +30,10 @@
 		<ProjectReference Include="..\WebAssembly.Net.Http\WebAssembly.Net.Http.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="BlazorApp\Shared\" />
+	  <Folder Include="Controlers\" />
+	  <Folder Include="Services\" />
+	</ItemGroup>
+
 </Project>

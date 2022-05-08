@@ -1,42 +1,47 @@
-﻿// Copyright (c) 2021 @Olivier Lefebvre. All rights reserved.
-// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
-using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Hosting;
+﻿// Project: Aguafrommars/TheIdServer
+// Copyright (c) 2022 @Olivier Lefebvre
+using Microsoft.AspNetCore.Builder;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
+using System.Diagnostics;
 using System.Linq;
+using TIS;
 
-namespace TIS
-{
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-            var seed = args.Any(x => x == "/seed");
-            if (seed)
-            {
-                args = args.Except(new[] { "/seed" }).ToArray();
-            }
+var builder = WebApplication.CreateBuilder(args);
 
-            var host = CreateWebHostBuilder(args).Build();
-
-            if (seed)
-            {
-                var config = host.Services.GetRequiredService<IConfiguration>();
-                SeedData.EnsureSeedData(config);
-                return;
-            }
-
-            host.Run();
-        }
-
-        public static IWebHostBuilder CreateWebHostBuilder(string[] args)
-        {
-            return WebHost.CreateDefaultBuilder(args)
-                    .UseStartup<Startup>()
-                    .UseSerilog((hostingContext, configuration) =>
+builder.Host.UseSerilog((hostingContext, configuration) =>
                         configuration.ReadFrom.Configuration(hostingContext.Configuration));
-        }
-    }
+
+var configuration = builder.Configuration;
+
+var services = builder.Services;
+
+services.AddTheIdServer(configuration);
+
+var seed = args.Any(x => x == "/seed");
+if (seed)
+{
+    args = args.Except(new[] { "/seed" }).ToArray();
 }
+
+var app = builder.Build();
+
+if (seed)
+{
+    var config = app.Services.GetRequiredService<IConfiguration>();
+    SeedData.EnsureSeedData(config, app.Services);
+    return;
+}
+
+var activitySource = new ActivitySource("TheIdServer");
+
+app.Use(async (context, next) =>
+{
+    using var activity = activitySource.StartActivity("Request");
+    await next().ConfigureAwait(false);
+});
+app.UseTheIdServer(app.Environment, configuration);
+
+app.Run();
