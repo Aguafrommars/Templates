@@ -12,7 +12,7 @@
 		<PackageReference Include="Aguacongas.DynamicConfiguration.WebApi" Version="1.0.0" />
 		<PackageReference Include="AspNetCore.HealthChecks.MongoDb" Version="6.0.2" />
 		<PackageReference Include="AspNetCore.HealthChecks.RavenDb" Version="6.0.2" />
-		<PackageReference Include="AspNetCore.HealthChecks.Redis" Version="6.0.3" />
+		<PackageReference Include="AspNetCore.HealthChecks.Redis" Version="6.0.4" />
 		<PackageReference Include="Aguacongas.IdentityServer.Admin.Duende" Version="5.0.0-preview1-0020" />
 		<PackageReference Include="Aguacongas.IdentityServer.EntityFramework.Store.Duende" Version="5.0.0-preview1-0020" />
 		<PackageReference Include="Aguacongas.IdentityServer.MongoDb.Store.Duende" Version="5.0.0-preview1-0020" />
