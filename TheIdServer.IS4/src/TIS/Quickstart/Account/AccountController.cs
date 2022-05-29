@@ -294,7 +294,11 @@ namespace IdentityServerHost.Quickstart.UI
                 EnableLocalLogin = allowLocal && settings.AllowLocalLogin,
                 ReturnUrl = returnUrl,
                 Username = context?.LoginHint,
-                ExternalProviders = providers.ToArray()
+                ExternalProviders = providers.ToArray(),
+                ShowForgotPassworLink = settings.ShowForgotPassworLink,
+                ShowRegisterLink = settings.ShowRegisterLink,
+                ShowResendEmailConfirmationLink = settings.ShowResendEmailConfirmationLink
+
             };
         }
 
