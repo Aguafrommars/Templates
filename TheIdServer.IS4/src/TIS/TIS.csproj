@@ -29,7 +29,7 @@
 		<PackageReference Include="Azure.Extensions.AspNetCore.DataProtection.Blobs" Version="1.2.1" />
 		<PackageReference Include="Azure.Extensions.AspNetCore.DataProtection.Keys" Version="1.1.0" />
 		<PackageReference Include="Azure.Identity" Version="1.6.0" />
-		<PackageReference Include="IdentityModel.AspNetCore.OAuth2Introspection" Version="6.0.0" />
+		<PackageReference Include="IdentityModel.AspNetCore.OAuth2Introspection" Version="6.1.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="6.0.5" />
 		<PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="6.0.5" />
 		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.5" />
