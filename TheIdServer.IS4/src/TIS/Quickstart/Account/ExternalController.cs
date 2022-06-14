@@ -12,13 +12,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
-using System.Security.Principal;
 using System.Threading.Tasks;
 
 namespace IdentityServerHost.Quickstart.UI
@@ -32,7 +30,6 @@ namespace IdentityServerHost.Quickstart.UI
         private readonly IIdentityServerInteractionService _interaction;
         private readonly IClientStore _clientStore;
         private readonly IEventService _events;
-        private readonly IOptions<AccountOptions> _options;
         private readonly ILogger<ExternalController> _logger;
 
         public ExternalController(
@@ -41,7 +38,6 @@ namespace IdentityServerHost.Quickstart.UI
             IIdentityServerInteractionService interaction,
             IClientStore clientStore,
             IEventService events,
-            IOptions<AccountOptions> options,
             ILogger<ExternalController> logger)
         {
             _userManager = userManager;
@@ -49,7 +45,6 @@ namespace IdentityServerHost.Quickstart.UI
             _interaction = interaction;
             _clientStore = clientStore;
             _events = events;
-            _options = options;
             _logger = logger;
         }
 
@@ -68,10 +63,11 @@ namespace IdentityServerHost.Quickstart.UI
                 throw new InvalidOperationException("invalid return URL");
             }
 
-            if (_options.Value.WindowsAuthenticationSchemeName == provider)
+            var result = await HttpContext.AuthenticateAsync(provider).ConfigureAwait(false);
+            if (result.Succeeded)
             {
                 // windows authentication needs special handling
-                return await ProcessWindowsLoginAsync(returnUrl);
+                return await ProcessWindowsLoginAsync(provider, result.Principal, returnUrl).ConfigureAwait(false);
             }
             else
             {
@@ -160,52 +156,39 @@ namespace IdentityServerHost.Quickstart.UI
             return Redirect(returnUrl);
         }
 
-        private async Task<IActionResult> ProcessWindowsLoginAsync(string returnUrl)
+        private async Task<IActionResult> ProcessWindowsLoginAsync(string provider, ClaimsPrincipal user, string returnUrl)
         {
-            var settings = _options.Value;
             // see if windows auth has already been requested and succeeded
-            var result = await HttpContext.AuthenticateAsync(settings.WindowsAuthenticationSchemeName);
-            if (result?.Principal is WindowsPrincipal wp)
+            // we will issue the external cookie and then redirect the
+            // user back to the external callback, in essence, treating windows
+            // auth the same as any other external authentication mechanism
+            var props = new AuthenticationProperties()
             {
-                // we will issue the external cookie and then redirect the
-                // user back to the external callback, in essence, treating windows
-                // auth the same as any other external authentication mechanism
-                var props = new AuthenticationProperties()
+                RedirectUri = Url.Action(nameof(Callback)),
+                Items =
                 {
-                    RedirectUri = Url.Action("Callback"),
-                    Items =
-                    {
-                        { "returnUrl", returnUrl },
-                        { "scheme", settings.WindowsAuthenticationSchemeName },
-                    }
-                };
-
-                var id = new ClaimsIdentity(settings.WindowsAuthenticationSchemeName);
-                id.AddClaim(new Claim(JwtClaimTypes.Subject, wp.Identity.Name));
-                id.AddClaim(new Claim(JwtClaimTypes.Name, wp.Identity.Name));
-
-                // add the groups as claims -- be careful if the number of groups is too large
-                if (settings.IncludeWindowsGroups)
-                {
-                    var wi = wp.Identity as WindowsIdentity;
-                    var groups = wi.Groups.Translate(typeof(NTAccount));
-                    var roles = groups.Select(x => new Claim(JwtClaimTypes.Role, x.Value));
-                    id.AddClaims(roles);
+                    { "returnUrl", returnUrl },
+                    { "scheme", provider },
                 }
+            };
 
-                await HttpContext.SignInAsync(
-                    IdentityServer4.IdentityServerConstants.ExternalCookieAuthenticationScheme,
-                    new ClaimsPrincipal(id),
-                    props);
-                return Redirect(props.RedirectUri);
-            }
-            else
-            {
-                // trigger windows auth
-                // since windows auth don't support the redirect uri,
-                // this URL is re-triggered when we call challenge
-                return Challenge(settings.WindowsAuthenticationSchemeName);
-            }
+            var id = new ClaimsIdentity(provider);
+            var name = user.Identity.Name ??
+                user.FindFirst(JwtClaimTypes.Name)?.Value ??
+                user.FindFirst(ClaimTypes.Name)?.Value ??
+                user.FindFirst(JwtSecurityTokenHandler.DefaultOutboundClaimTypeMap[ClaimTypes.Name])?.Value ??
+                user.FindFirst(ClaimTypes.NameIdentifier)?.Value ??
+                user.FindFirst(JwtSecurityTokenHandler.DefaultOutboundClaimTypeMap[ClaimTypes.NameIdentifier])?.Value;
+
+            id.AddClaim(new Claim(JwtClaimTypes.Subject, name));
+            id.AddClaim(new Claim(JwtClaimTypes.Name, name));
+
+            await HttpContext.SignInAsync(
+                IdentityConstants.ExternalScheme,
+                new ClaimsPrincipal(id),
+                props).ConfigureAwait(false);
+
+            return Redirect(props.RedirectUri);
         }
 
         private async Task<(ApplicationUser user, string provider, string providerUserId, IEnumerable<Claim> claims)>
