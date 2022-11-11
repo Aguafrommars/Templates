@@ -1,3 +1,20 @@
+# [3.1.0](https://github.com/Aguafrommars/Templates/compare/3.0.0...3.1.0) (2022-06-14)
+
+
+### Bug Fixes
+
+* update packages ([474c9c2](https://github.com/Aguafrommars/Templates/commit/474c9c2b9f58f25c7ac548649b4b8471b6de41e8))
+* update packages ([e36712a](https://github.com/Aguafrommars/Templates/commit/e36712ac6c169aedbc7347ba701c9f81a661c3a4))
+* update packages ([20ceec8](https://github.com/Aguafrommars/Templates/commit/20ceec81ced797d998246b1221ae3b1dbd7ef428))
+* update packages ([56b5cfc](https://github.com/Aguafrommars/Templates/commit/56b5cfc643ee679be71709e72c87fa358b8f53b6))
+* update packages ([2ccbeba](https://github.com/Aguafrommars/Templates/commit/2ccbebac860ab706dfba9aefbab356a9aec1cb39))
+* update packages ([28dcbb8](https://github.com/Aguafrommars/Templates/commit/28dcbb8aab02a22bb826c1560898fd579613568f))
+
+
+### Features
+
+* dynamic windows provider ([c64683f](https://github.com/Aguafrommars/Templates/commit/c64683f2dba7d8564ddf891d80591cfbb6a1a9dd))
+
 # [3.0.0](https://github.com/Aguafrommars/Templates/compare/2.2.0...3.0.0) (2022-05-30)
 
 
