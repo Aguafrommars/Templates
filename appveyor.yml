@@ -11,7 +11,7 @@ image:
 - Visual Studio 2019
 environment:
   GH_TOKEN: 
-    secure: aV5flJ5BOs49dlM4XRpu7t1qa+ajMD5L4hhwlBOv+zff/NlSkdnrmk5nYNsIJCdE
+    secure: /o9VAhx5ewGmdLR9qcgFJMzBaCuzOmGlsXAHu7khUJLdQzsv4gJzLUfYDghcRPHd
   donetsdk: 7.0.100
 init:
   - cmd: git config --global core.autocrlf true
