@@ -1,3 +1,98 @@
+## [4.0.1](https://github.com/Aguafrommars/Templates/compare/4.0.0...4.0.1) (2023-03-06)
+
+
+### Bug Fixes
+
+* package version conflict ([5f7633e](https://github.com/Aguafrommars/Templates/commit/5f7633ed8208429c777d9fc1049ee99e1af48cb0)), closes [#197](https://github.com/Aguafrommars/Templates/issues/197)
+* update packages ([d358eb2](https://github.com/Aguafrommars/Templates/commit/d358eb29731fbfa2d5697fe9224c14afd87e438d))
+* update packages ([fda22d0](https://github.com/Aguafrommars/Templates/commit/fda22d0578ebfc18e7af25da2bcdf5d1cc0a8e4c))
+* update packages ([8f47688](https://github.com/Aguafrommars/Templates/commit/8f47688ffc95eef44c5a2de58871995dd038ef06))
+* update packages ([c810aae](https://github.com/Aguafrommars/Templates/commit/c810aae76f0c35387ab8f6f67c702e16dea62401))
+* update packages ([328cab7](https://github.com/Aguafrommars/Templates/commit/328cab74b7d14f6a371782dab78368777f82fa4e))
+* update packages ([d7e72ca](https://github.com/Aguafrommars/Templates/commit/d7e72ca85cad39288074ad8ba638d93570437128))
+* update packages ([4d17af4](https://github.com/Aguafrommars/Templates/commit/4d17af46ed25e8be7f3af8470b44beda1ecd18dd))
+* update packages ([a895c83](https://github.com/Aguafrommars/Templates/commit/a895c8316f2278ecb6b30c755bca0a809d739f03))
+* update packages ([cd5d872](https://github.com/Aguafrommars/Templates/commit/cd5d87244505d65c1043089c1ca0671d4e30e222))
+* update packages ([6bbbde5](https://github.com/Aguafrommars/Templates/commit/6bbbde5a3ec2c39ecc44602a67f64a535bab947c))
+* update packages ([9ff54d4](https://github.com/Aguafrommars/Templates/commit/9ff54d469ff61462e925b11e7008c2a9ecbf1b35))
+* update packages ([f242aa1](https://github.com/Aguafrommars/Templates/commit/f242aa1b375476df7f61fd511e070e9c24cc5db4))
+* update packages ([00fba09](https://github.com/Aguafrommars/Templates/commit/00fba09e721582c6215af4ce37ad75aab1371545))
+* update packages ([db0c88b](https://github.com/Aguafrommars/Templates/commit/db0c88b7f2cfa6e48c509ddf190aa4af4fd82c18))
+* update packages ([2ed74df](https://github.com/Aguafrommars/Templates/commit/2ed74df47c1a96472fd1859885e5bf4e49da101e))
+* update packages ([ee089e3](https://github.com/Aguafrommars/Templates/commit/ee089e390fe5fe98d310f69d6025e5218b277464))
+* update packages ([251ebe3](https://github.com/Aguafrommars/Templates/commit/251ebe334e17e57e00ecd7e851fdaf9aad06c8d6))
+* update packages ([15bf2dc](https://github.com/Aguafrommars/Templates/commit/15bf2dc6d3239eacc2d6a0a29c4e38bd7c2a57e2))
+* update packages ([41703b7](https://github.com/Aguafrommars/Templates/commit/41703b7605ff0f61519303d7a7962b088120164b))
+* update packages ([0665e85](https://github.com/Aguafrommars/Templates/commit/0665e85a3a0faace6ead6ce3d6790c37cc1e2a51))
+* update packages ([1e7edab](https://github.com/Aguafrommars/Templates/commit/1e7edab9959a76577530ca2d699f3cc21aac0ace))
+
+# [4.0.0](https://github.com/Aguafrommars/Templates/compare/3.1.0...4.0.0) (2022-11-22)
+
+
+### Bug Fixes
+
+* TheIdServer.IS4/src/TIS.BlazorApp/Dockerfile to reduce vulnerabilities ([21fba46](https://github.com/Aguafrommars/Templates/commit/21fba465ed19ae59eae9a0fca9d9e15e5c45305c))
+* update packages ([3941cd0](https://github.com/Aguafrommars/Templates/commit/3941cd06d1448557e02fb0f189adbced65981d35))
+* update packages ([a09cae7](https://github.com/Aguafrommars/Templates/commit/a09cae7e9491fb4ad00dc2358da2a2ed1d4f3d84))
+* update packages ([301307b](https://github.com/Aguafrommars/Templates/commit/301307baa8b063f59e16102b2b8b2fab4e2811d4))
+* update packages ([4b48f08](https://github.com/Aguafrommars/Templates/commit/4b48f0844dc188198541844915017f24310b19d4))
+* update packages ([206909a](https://github.com/Aguafrommars/Templates/commit/206909a6914ce3620b13dfc31348e4202c21854f))
+* update packages ([5e8ac5a](https://github.com/Aguafrommars/Templates/commit/5e8ac5a875cc662e3443f3043fab0968a74f4f27))
+* update packages ([038d02d](https://github.com/Aguafrommars/Templates/commit/038d02df5c89105283d29b4df2a2429c967ea160))
+* update packages ([41145da](https://github.com/Aguafrommars/Templates/commit/41145dae7069aa158cb7a04c51a20712c7af9c84))
+* update packages ([121eca6](https://github.com/Aguafrommars/Templates/commit/121eca6bd3f1aea8da82282eb5df5ce8d5aced91))
+* update packages ([5cf0180](https://github.com/Aguafrommars/Templates/commit/5cf0180dea6497acd550895ec8cb7059d82c83fd))
+* update packages ([b3f6aa7](https://github.com/Aguafrommars/Templates/commit/b3f6aa7bf94cfa6dda8c86cc7b2d694aa9b88e37))
+* update packages ([2639271](https://github.com/Aguafrommars/Templates/commit/26392713ea1db9a6095185325c6c11334ba03abc))
+* update packages ([d55a9d1](https://github.com/Aguafrommars/Templates/commit/d55a9d194784e7a43d39d1367a010febff62203d))
+* update packages ([54332de](https://github.com/Aguafrommars/Templates/commit/54332debdd6a6a19d96b636a473a2d4383750ed2))
+* update packages ([71d00d8](https://github.com/Aguafrommars/Templates/commit/71d00d8ae2fd6be18cb44afd1e46401945a06388))
+* update packages ([8f169f7](https://github.com/Aguafrommars/Templates/commit/8f169f78cfc6e622f55a4ee5830324124bd83e1e))
+* update packages ([2dbb1bd](https://github.com/Aguafrommars/Templates/commit/2dbb1bda36b900e0f4593dd4b6aa942d14afc0f4))
+* update packages ([a72516e](https://github.com/Aguafrommars/Templates/commit/a72516e56413dbbd263db5e5f4ddd66bca710d7e))
+* update packages ([59ec063](https://github.com/Aguafrommars/Templates/commit/59ec063f7042fed1a153bcd36c6de7e6dadf0152))
+* update packages ([d6cbe95](https://github.com/Aguafrommars/Templates/commit/d6cbe95f46b800b510f81fdd78bc6aca084f2199))
+* update packages ([60d624b](https://github.com/Aguafrommars/Templates/commit/60d624bc46fde27d4a7a8fba5edf566ad2efcfe2))
+* update packages ([bf04798](https://github.com/Aguafrommars/Templates/commit/bf047981237388de009e3f5b840c8b657adf4c96))
+* update packages ([8c47467](https://github.com/Aguafrommars/Templates/commit/8c47467787886cda8fec4ae6d46b430e9caa9a07))
+* update packages ([59cd9e2](https://github.com/Aguafrommars/Templates/commit/59cd9e2bfe1d75eae7a094e104c8390be7226f2f))
+* update packages ([2a8046b](https://github.com/Aguafrommars/Templates/commit/2a8046b9cc78a3a0aaf779476948468a6721a662))
+* update packages ([a508c00](https://github.com/Aguafrommars/Templates/commit/a508c000d5ed6ce936ea2e006d78cd21193b8344))
+* update packages ([baac7fb](https://github.com/Aguafrommars/Templates/commit/baac7fb43a9557a3d71d6da05a1fc32e6ed8658d))
+* update packages ([18465fa](https://github.com/Aguafrommars/Templates/commit/18465fa2e1eddd7648be5fc11cc90a2a9bae8747))
+* update packages ([424ecee](https://github.com/Aguafrommars/Templates/commit/424ecee22328dbc19c3a0db37ba1e376601322a8))
+* update packages ([8a6d218](https://github.com/Aguafrommars/Templates/commit/8a6d218c7e4c1452871d12e2d3bad8f8be247229))
+* update packages ([3000d18](https://github.com/Aguafrommars/Templates/commit/3000d18ec55095ed9bc3c100d083cf66bdc0fad4))
+* update packages ([7a82a5f](https://github.com/Aguafrommars/Templates/commit/7a82a5f0838a5b8afc046c6aecb350eaa368617a))
+* update packages ([981bcad](https://github.com/Aguafrommars/Templates/commit/981bcad9671b6906b21ae4288e026ee6aae29985))
+* update packages ([b078299](https://github.com/Aguafrommars/Templates/commit/b078299e50f6a9cf6cd79508ef7cddd7cc16a826))
+* update packages ([d026770](https://github.com/Aguafrommars/Templates/commit/d0267700e398a0ce1a08f80c3a078217429a07f3))
+* update packages ([af1159a](https://github.com/Aguafrommars/Templates/commit/af1159a33c762abccd7c4683aa77eb35360d446b))
+* update packages ([11ceb97](https://github.com/Aguafrommars/Templates/commit/11ceb97017b85bfd44eb83b8dca09d6ad2386a71))
+* update packages ([6123670](https://github.com/Aguafrommars/Templates/commit/61236700926ff4d07cc7d0fa9cc318d2f7f1d5f5))
+* update packages ([ce40cd1](https://github.com/Aguafrommars/Templates/commit/ce40cd11d2597f5bef84ef0d181a420885d93753))
+* update packages ([e0e7e48](https://github.com/Aguafrommars/Templates/commit/e0e7e48af34a3cc12b2d9b70bd425607aa880a2d))
+* update packages ([e591523](https://github.com/Aguafrommars/Templates/commit/e591523acf0943406728ae1ca8655fd8f33e6828))
+* update packages ([65a6e3b](https://github.com/Aguafrommars/Templates/commit/65a6e3bb84a2b425cade378c792be3e08e0d4047))
+* update packages ([0107cd3](https://github.com/Aguafrommars/Templates/commit/0107cd30eb8e8ce4cc4d0e8c2ab8de11a9447d33))
+* update packages ([60fceb6](https://github.com/Aguafrommars/Templates/commit/60fceb6c0e962450ff55e5de200f16abe3846339))
+* update packages ([c312ee4](https://github.com/Aguafrommars/Templates/commit/c312ee46e7f9ec6c1d5553f7d90a6f29f20dc857))
+* update packages ([073c77c](https://github.com/Aguafrommars/Templates/commit/073c77c1450de1e1bb522f1feed606ffcb7c4150))
+* update packages ([ed2d77b](https://github.com/Aguafrommars/Templates/commit/ed2d77b9497b8fcc55249ea6e70c0f16a645289d))
+* update packages ([15feea3](https://github.com/Aguafrommars/Templates/commit/15feea3efd31f0f887bcfecb3b9d891941a4df8e))
+* update packages ([275d5cf](https://github.com/Aguafrommars/Templates/commit/275d5cfcd79929ed77f697e9a468b2a4b0f9cc7e))
+* update packages ([fa17fdc](https://github.com/Aguafrommars/Templates/commit/fa17fdc97f6f24ff3c476d3ab7cf0f853d701748))
+
+
+### Build System
+
+* drop is4 ([5f3c157](https://github.com/Aguafrommars/Templates/commit/5f3c15788f430c95ab8a60b386e6805c41210615))
+
+
+### BREAKING CHANGES
+
+* drop IS4
+
 # [3.1.0](https://github.com/Aguafrommars/Templates/compare/3.0.0...3.1.0) (2022-06-14)
 
 
