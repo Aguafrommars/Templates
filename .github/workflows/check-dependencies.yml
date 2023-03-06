@@ -33,13 +33,7 @@ jobs:
       - name: Setup .NET Core SDK
         uses: actions/setup-dotnet@v1.7.2
         with: 
-          dotnet-version: 6.0.x
-      # Run update IS4 depencies script
-      - name: Update IS4 dependencies
-        working-directory: TheIdServer.IS4
-        run: ./update-dependencies.ps1
-        env: 	
-          GITHUB_TOKEN: ${{ secrets.PAT }}
+          dotnet-version: 7.0.x
       # Run update Duende depencies script
       - name: Update Duende dependencies
         working-directory: TheIdServer.Duende

@@ -1,6 +1,6 @@
 // Copyright (c) 2021 @Olivier Lefebvre. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
-using Microsoft.AspNetCore.Server.IISIntegration;
+using Microsoft.AspNetCore.Authentication.Negotiate;
 using System;
 
 namespace IdentityServerHost.Quickstart.UI
@@ -15,7 +15,8 @@ namespace IdentityServerHost.Quickstart.UI
         public bool AutomaticRedirectAfterSignOut { get; set; } = false;
 
         // specify the Windows authentication scheme being used
-        public string WindowsAuthenticationSchemeName { get; } = IISDefaults.AuthenticationScheme;
+        public string WindowsAuthenticationSchemeName { get; } = NegotiateDefaults.AuthenticationScheme;
+
         // if user uses windows auth, should we load the groups from windows
         public bool IncludeWindowsGroups { get; set; } = false;
 

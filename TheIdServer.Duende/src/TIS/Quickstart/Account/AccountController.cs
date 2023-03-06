@@ -265,11 +265,11 @@ namespace IdentityServerHost.Quickstart.UI
             var settings = _options.Value;
             var providers = schemes
                 .Where(x => x.DisplayName != null ||
-                            (x.Name.Equals(settings.WindowsAuthenticationSchemeName, StringComparison.OrdinalIgnoreCase))
+                            x.Name.Equals(settings.WindowsAuthenticationSchemeName, StringComparison.OrdinalIgnoreCase)
                 )
                 .Select(x => new ExternalProvider
                 {
-                    DisplayName = x.DisplayName,
+                    DisplayName = x.DisplayName ?? x.Name,
                     AuthenticationScheme = x.Name
                 }).ToList();
 
