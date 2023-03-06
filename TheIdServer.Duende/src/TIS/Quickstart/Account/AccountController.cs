@@ -20,6 +20,7 @@ using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using TIS.Quickstart.Account;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace IdentityServerHost.Quickstart.UI
 {
@@ -352,7 +353,10 @@ namespace IdentityServerHost.Quickstart.UI
                 var idp = User.FindFirst(JwtClaimTypes.IdentityProvider)?.Value;
                 if (idp != null && idp != IdentityServerConstants.LocalIdentityProvider)
                 {
-                    var providerSupportsSignout = await HttpContext.GetSchemeSupportsSignOutAsync(idp);
+                    var provider = HttpContext.RequestServices.GetRequiredService<IAuthenticationHandlerProvider>();
+                    var handler = await provider.GetHandlerAsync(HttpContext, idp);
+                    var providerSupportsSignout = handler is IAuthenticationSignOutHandler;
+
                     if (providerSupportsSignout)
                     {
                         if (vm.LogoutId == null)

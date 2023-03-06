@@ -20,6 +20,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading.Tasks;
+using System.Runtime.InteropServices;
 
 namespace IdentityServerHost.Quickstart.UI
 {
@@ -30,7 +31,6 @@ namespace IdentityServerHost.Quickstart.UI
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IIdentityServerInteractionService _interaction;
-        private readonly IClientStore _clientStore;
         private readonly IEventService _events;
         private readonly IOptions<AccountOptions> _options;
         private readonly ILogger<ExternalController> _logger;
@@ -39,7 +39,6 @@ namespace IdentityServerHost.Quickstart.UI
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             IIdentityServerInteractionService interaction,
-            IClientStore clientStore,
             IEventService events,
             IOptions<AccountOptions> options,
             ILogger<ExternalController> logger)
@@ -47,7 +46,6 @@ namespace IdentityServerHost.Quickstart.UI
             _userManager = userManager;
             _signInManager = signInManager;
             _interaction = interaction;
-            _clientStore = clientStore;
             _events = events;
             _options = options;
             _logger = logger;
@@ -165,7 +163,7 @@ namespace IdentityServerHost.Quickstart.UI
             var settings = _options.Value;
             // see if windows auth has already been requested and succeeded
             var result = await HttpContext.AuthenticateAsync(settings.WindowsAuthenticationSchemeName);
-            if (result?.Principal is WindowsPrincipal wp)
+            if (result?.Principal is WindowsPrincipal wp && RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 // we will issue the external cookie and then redirect the
                 // user back to the external callback, in essence, treating windows
@@ -189,12 +187,14 @@ namespace IdentityServerHost.Quickstart.UI
                 {
                     var wi = wp.Identity as WindowsIdentity;
                     var groups = wi.Groups.Translate(typeof(NTAccount));
+#pragma warning disable CA1416 // Validate platform compatibility. Already checked
                     var roles = groups.Select(x => new Claim(JwtClaimTypes.Role, x.Value));
+#pragma warning restore CA1416 // Validate platform compatibility
                     id.AddClaims(roles);
                 }
 
                 await HttpContext.SignInAsync(
-                    Duende.IdentityServer.IdentityServerConstants.ExternalCookieAuthenticationScheme,
+                    IdentityServerConstants.ExternalCookieAuthenticationScheme,
                     new ClaimsPrincipal(id),
                     props);
                 return Redirect(props.RedirectUri);

@@ -2,7 +2,6 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 using Aguacongas.IdentityServer.Admin.Configuration;
 using Aguacongas.IdentityServer.EntityFramework.Store;
-using Aguacongas.IdentityServer.KeysRotation.RavenDb;
 using Azure.Identity;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption.ConfigurationModel;
@@ -12,8 +11,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Win32;
 using StackExchange.Redis;
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography.X509Certificates;
 using TIS.Models;
 
@@ -71,6 +70,11 @@ namespace Microsoft.Extensions.DependencyInjection
                         builder.ProtectKeysWithAzureKeyVault(new Uri(protectOptions.AzureKeyVaultKeyId), new DefaultAzureCredential());
                         break;
                     case KeyProtectionKind.WindowsDpApi:
+                        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                        {
+                            throw new PlatformNotSupportedException();
+                        }
+
                         builder.ProtectKeysWithDpapi(protectOptions.WindowsDPAPILocalMachine);
                         break;
                     case KeyProtectionKind.WindowsDpApiNg:
@@ -102,6 +106,11 @@ namespace Microsoft.Extensions.DependencyInjection
 
         private static void ConfigureWindowsDpApiNg(IDataProtectionBuilder builder, KeyProtectionOptions protectOptions)
         {
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                throw new PlatformNotSupportedException();
+            }
+
             if (!string.IsNullOrEmpty(protectOptions.WindowsDpApiNgCerticate))
             {
                 builder.ProtectKeysWithDpapiNG($"CERTIFICATE=HashId:{protectOptions.WindowsDpApiNgCerticate}", flags: DpapiNGProtectionDescriptorFlags.None);
