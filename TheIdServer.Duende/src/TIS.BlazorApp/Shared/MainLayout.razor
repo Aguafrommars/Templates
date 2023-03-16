@@ -1,23 +1,27 @@
-@inject Notifier _notifier;
+﻿@inject Notifier _notifier;
 @inject IStringLocalizerAsync<MainLayout> Localizer
 
 @inherits LayoutComponentBase
 
-<div class="sidebar bg-light">
+<div class="sidebar">
     <NavMenu />
-    <div class="fixed-bottom bg-light">
-        <a class="px-3" href="https://github.com/aguacongas/TheIdServer/blob/master/README.md" target="_blank">@Localizer["About"]</a>
-    </div>
 </div>
 
-<div class="main bg-light mb-2">
-    <div class="top-row px-4 auth">
+<div class="main mb-2">
+    <div class="nav top-row px-4 auth bg-body-secondary">
         <EntityInfo />
         <LoginDisplay />
+        <ThemeButton />
     </div>
-
     <div class="content px-4">
-        @Body
+        @if (IsClientSide)
+        {
+            @Body
+        }
+        else
+        {
+            <PageLoading Information="Loading..." />
+        }
     </div>
 </div>
 <Toaster />

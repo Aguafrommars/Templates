@@ -88,7 +88,12 @@ namespace Aguacongas.TheIdServer.IntegrationTest
                         GrantedScopes = new string[] { "openid", "profile", "theidseveradminaoi" },
                         Value = "test"
                     },
-                    "http://exemple.com"));
+                    "http://exemple.com",
+                    new InteractiveRequestOptions
+                    {
+                        Interaction = InteractionType.GetToken,
+                        ReturnUrl = "http://exemple.com"
+                    }));
             }
 
             public ValueTask<AccessTokenResult> RequestAccessToken(AccessTokenRequestOptions options)
@@ -139,50 +144,6 @@ namespace Aguacongas.TheIdServer.IntegrationTest
             }
 
             public override string Name => _userName;
-        }
-
-        class FakeSignOutSessionStateManager : SignOutSessionStateManager
-        {
-            public FakeSignOutSessionStateManager(IJSRuntime jsRuntime) : base(jsRuntime)
-            { }
-
-            public override ValueTask SetSignOutState()
-            {
-                return new ValueTask();
-            }
-
-            public override Task<bool> ValidateSignOutState()
-            {
-                return Task.FromResult(true);
-            }
-        }
-
-        class FakeDelegatingHandler : DelegatingHandler
-        {
-            private readonly HttpMessageHandler _handler;
-
-            public FakeDelegatingHandler(HttpMessageHandler handler)
-            {
-                _handler = handler;
-            }
-
-            protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
-            {
-                var method = typeof(HttpMessageHandler).GetMethod("SendAsync", BindingFlags.NonPublic | BindingFlags.Instance);
-
-                if (request.Content is MultipartFormDataContent dataContent)
-                {
-                    var content = new MultipartFormDataContent();
-                    var fileContent = dataContent.First() as StreamContent;
-                    var contentDisposition = fileContent.Headers.GetValues("Content-Disposition");
-                    var fileName = contentDisposition.First().Split("; ").First(s => s.StartsWith("filename")).Split("=")[1];
-                    var file = File.OpenRead(fileName);
-                    content.Add(new StreamContent(file), "files", file.Name);
-                    request.Content = content;
-
-                }
-                return method.Invoke(_handler, new object[] { request, cancellationToken }) as Task<HttpResponseMessage>;
-            }
         }
     }
 

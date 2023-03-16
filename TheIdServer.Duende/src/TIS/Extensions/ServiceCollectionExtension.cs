@@ -170,13 +170,13 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.AddRemoteAuthentication<RemoteAuthenticationState, RemoteUserAccount, OidcProviderOptions>();
             services.AddScoped<LazyAssemblyLoader>()
+                 .AddScoped<ThemeService>()
                  .AddScoped<AuthenticationStateProvider, RemoteAuthenticationService>()
-                 .AddScoped<SignOutSessionStateManager>()
                  .AddScoped<ISharedStringLocalizerAsync, Aguacongas.TheIdServer.BlazorApp.Infrastructure.Services.StringLocalizer>()
                  .AddTransient<IReadOnlyCultureStore, PreRenderCultureStore>()
                  .AddTransient<IReadOnlyLocalizedResourceStore, PreRenderLocalizedResourceStore>()
                  .AddTransient<IAccessTokenProvider, AccessTokenProvider>()
-                 .AddTransient<Microsoft.JSInterop.IJSRuntime, JSRuntime>()
+                 .AddTransient<JSInterop.IJSRuntime, JSRuntime>()
                  .AddTransient<IKeyStore<RsaEncryptorDescriptor>, KeyStore<RsaEncryptorDescriptor, Aguacongas.IdentityServer.KeysRotation.RsaEncryptorDescriptor>>()
                  .AddTransient<IKeyStore<IAuthenticatedEncryptorDescriptor>, KeyStore<IAuthenticatedEncryptorDescriptor, Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption.ConfigurationModel.IAuthenticatedEncryptorDescriptor>>()
                  .AddAdminApplication(new Settings())

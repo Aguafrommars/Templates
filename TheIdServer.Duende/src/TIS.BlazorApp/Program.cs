@@ -19,7 +19,7 @@ namespace TIS.BlazorApp
             builder.AddTheIdServerApp();
             var configuration = builder.Configuration;
             var settings = configuration.Get<Settings>();
-            if (!settings.Prerendered)
+            if (settings?.Prerendered == false)
             {
                 builder.RootComponents.Add<App>("app");
             }
