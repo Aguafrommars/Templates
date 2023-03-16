@@ -349,3 +349,7 @@ MigrationBackup/
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
 /TheIdServer/src/TIS/TIS.db
+/TheIdServer.Duende/src/TIS/keys
+/TheIdServer.Duende/src/TIS/TIS.db
+/TheIdServer.Duende/src/TIS/TIS.db-shm
+/TheIdServer.Duende/src/TIS/TIS.db-wal
