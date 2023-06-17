@@ -14,19 +14,19 @@
 		<PackageReference Include="AspNetCore.HealthChecks.MongoDb" Version="6.0.2" />
 		<PackageReference Include="AspNetCore.HealthChecks.RavenDb" Version="6.0.2" />
 		<PackageReference Include="AspNetCore.HealthChecks.Redis" Version="6.0.4" />
-		<PackageReference Include="Aguacongas.IdentityServer.Admin.Duende" Version="7.4.0" />
-		<PackageReference Include="Aguacongas.IdentityServer.EntityFramework.Store.Duende" Version="7.4.0" />
-		<PackageReference Include="Aguacongas.IdentityServer.MongoDb.Store.Duende" Version="7.4.0" />
-		<PackageReference Include="Aguacongas.IdentityServer.RavenDb.Store.Duende" Version="7.4.0" />
-		<PackageReference Include="Aguacongas.IdentityServer.Http.Store" Version="7.4.0" />
-		<PackageReference Include="Aguacongas.IdentityServer.WsFederation.Duende" Version="7.4.0" />
-		<PackageReference Include="Aguacongas.TheIdServer.Authentication" Version="7.4.0" />
-		<PackageReference Include="Aguacongas.TheIdServer.Identity" Version="7.4.0" />
-		<PackageReference Include="Aguacongas.TheIdServer.Migrations.MySql" Version="7.4.0" />
-		<PackageReference Include="Aguacongas.TheIdServer.Migrations.Oracle" Version="7.4.0" />
-		<PackageReference Include="Aguacongas.TheIdServer.Migrations.PostgreSQL" Version="7.4.0" />
-		<PackageReference Include="Aguacongas.TheIdServer.Migrations.Sqlite" Version="7.4.0" />
-		<PackageReference Include="Aguacongas.TheIdServer.Migrations.SqlServer" Version="7.4.0" />
+		<PackageReference Include="Aguacongas.IdentityServer.Admin.Duende" Version="7.4.1" />
+		<PackageReference Include="Aguacongas.IdentityServer.EntityFramework.Store.Duende" Version="7.4.1" />
+		<PackageReference Include="Aguacongas.IdentityServer.MongoDb.Store.Duende" Version="7.4.1" />
+		<PackageReference Include="Aguacongas.IdentityServer.RavenDb.Store.Duende" Version="7.4.1" />
+		<PackageReference Include="Aguacongas.IdentityServer.Http.Store" Version="7.4.1" />
+		<PackageReference Include="Aguacongas.IdentityServer.WsFederation.Duende" Version="7.4.1" />
+		<PackageReference Include="Aguacongas.TheIdServer.Authentication" Version="7.4.1" />
+		<PackageReference Include="Aguacongas.TheIdServer.Identity" Version="7.4.1" />
+		<PackageReference Include="Aguacongas.TheIdServer.Migrations.MySql" Version="7.4.1" />
+		<PackageReference Include="Aguacongas.TheIdServer.Migrations.Oracle" Version="7.4.1" />
+		<PackageReference Include="Aguacongas.TheIdServer.Migrations.PostgreSQL" Version="7.4.1" />
+		<PackageReference Include="Aguacongas.TheIdServer.Migrations.Sqlite" Version="7.4.1" />
+		<PackageReference Include="Aguacongas.TheIdServer.Migrations.SqlServer" Version="7.4.1" />
 		<PackageReference Include="Azure.Extensions.AspNetCore.DataProtection.Blobs" Version="1.3.2" />
 		<PackageReference Include="Azure.Extensions.AspNetCore.DataProtection.Keys" Version="1.2.2" />
 		<PackageReference Include="Azure.Identity" Version="1.9.0" />
