@@ -9,8 +9,8 @@
     </PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Aguacongas.DynamicConfiguration.Redis" Version="1.0.1" />
-		<PackageReference Include="Aguacongas.DynamicConfiguration.WebApi" Version="1.0.1" />
+		<PackageReference Include="Aguacongas.DynamicConfiguration.Redis" Version="2.0.0" />
+		<PackageReference Include="Aguacongas.DynamicConfiguration.WebApi" Version="2.0.0" />
 		<PackageReference Include="AspNetCore.HealthChecks.MongoDb" Version="7.0.0" />
 		<PackageReference Include="AspNetCore.HealthChecks.RavenDb" Version="7.0.0" />
 		<PackageReference Include="AspNetCore.HealthChecks.Redis" Version="7.0.1" />
