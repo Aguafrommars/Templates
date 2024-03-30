@@ -1,3 +1,10 @@
+## [5.0.1](https://github.com/Aguafrommars/Templates/compare/5.0.0...5.0.1) (2024-03-30)
+
+
+### Bug Fixes
+
+* external claims transformer tests ([8a07b8a](https://github.com/Aguafrommars/Templates/commit/8a07b8af933e37fedfe9164a584cc3b156e2c87a)), closes [#283](https://github.com/Aguafrommars/Templates/issues/283)
+
 # [5.0.0](https://github.com/Aguafrommars/Templates/compare/4.0.1...5.0.0) (2024-03-16)
 
 
