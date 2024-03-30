@@ -35,24 +35,24 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<BlazorWebAssemblyLazyLoad Include="Aguacongas.TheIdServer.BlazorApp.Pages.Apis.dll" />
-		<BlazorWebAssemblyLazyLoad Include="Aguacongas.TheIdServer.BlazorApp.Pages.Api.dll" />
-		<BlazorWebAssemblyLazyLoad Include="Aguacongas.TheIdServer.BlazorApp.Pages.ApiScopes.dll" />
-		<BlazorWebAssemblyLazyLoad Include="Aguacongas.TheIdServer.BlazorApp.Pages.ApiScope.dll" />
-		<BlazorWebAssemblyLazyLoad Include="Aguacongas.TheIdServer.BlazorApp.Pages.Clients.dll" />
-		<BlazorWebAssemblyLazyLoad Include="Aguacongas.TheIdServer.BlazorApp.Pages.Client.dll" />
-		<BlazorWebAssemblyLazyLoad Include="Aguacongas.TheIdServer.BlazorApp.Pages.Cultures.dll" />
-		<BlazorWebAssemblyLazyLoad Include="Aguacongas.TheIdServer.BlazorApp.Pages.Culture.dll" />
-		<BlazorWebAssemblyLazyLoad Include="Aguacongas.TheIdServer.BlazorApp.Pages.ExternalProviders.dll" />
-		<BlazorWebAssemblyLazyLoad Include="Aguacongas.TheIdServer.BlazorApp.Pages.ExternalProvider.dll" />
-		<BlazorWebAssemblyLazyLoad Include="Aguacongas.TheIdServer.BlazorApp.Pages.Identities.dll" />
-		<BlazorWebAssemblyLazyLoad Include="Aguacongas.TheIdServer.BlazorApp.Pages.Identity.dll" />
-		<BlazorWebAssemblyLazyLoad Include="Aguacongas.TheIdServer.BlazorApp.Pages.Import.dll" />
-		<BlazorWebAssemblyLazyLoad Include="Aguacongas.TheIdServer.BlazorApp.Pages.Keys.dll" />
-		<BlazorWebAssemblyLazyLoad Include="Aguacongas.TheIdServer.BlazorApp.Pages.Roles.dll" />
-		<BlazorWebAssemblyLazyLoad Include="Aguacongas.TheIdServer.BlazorApp.Pages.Role.dll" />
-		<BlazorWebAssemblyLazyLoad Include="Aguacongas.TheIdServer.BlazorApp.Pages.Users.dll" />
-		<BlazorWebAssemblyLazyLoad Include="Aguacongas.TheIdServer.BlazorApp.Pages.User.dll" />
+		<BlazorWebAssemblyLazyLoad Include="Aguacongas.TheIdServer.BlazorApp.Pages.Apis.wasm" />
+		<BlazorWebAssemblyLazyLoad Include="Aguacongas.TheIdServer.BlazorApp.Pages.Api.wasm" />
+		<BlazorWebAssemblyLazyLoad Include="Aguacongas.TheIdServer.BlazorApp.Pages.ApiScopes.wasm" />
+		<BlazorWebAssemblyLazyLoad Include="Aguacongas.TheIdServer.BlazorApp.Pages.ApiScope.wasm" />
+		<BlazorWebAssemblyLazyLoad Include="Aguacongas.TheIdServer.BlazorApp.Pages.Clients.wasm" />
+		<BlazorWebAssemblyLazyLoad Include="Aguacongas.TheIdServer.BlazorApp.Pages.Client.wasm" />
+		<BlazorWebAssemblyLazyLoad Include="Aguacongas.TheIdServer.BlazorApp.Pages.Cultures.wasm" />
+		<BlazorWebAssemblyLazyLoad Include="Aguacongas.TheIdServer.BlazorApp.Pages.Culture.wasm" />
+		<BlazorWebAssemblyLazyLoad Include="Aguacongas.TheIdServer.BlazorApp.Pages.ExternalProviders.wasm" />
+		<BlazorWebAssemblyLazyLoad Include="Aguacongas.TheIdServer.BlazorApp.Pages.ExternalProvider.wasm" />
+		<BlazorWebAssemblyLazyLoad Include="Aguacongas.TheIdServer.BlazorApp.Pages.Identities.wasm" />
+		<BlazorWebAssemblyLazyLoad Include="Aguacongas.TheIdServer.BlazorApp.Pages.Identity.wasm" />
+		<BlazorWebAssemblyLazyLoad Include="Aguacongas.TheIdServer.BlazorApp.Pages.Import.wasm" />
+		<BlazorWebAssemblyLazyLoad Include="Aguacongas.TheIdServer.BlazorApp.Pages.Keys.wasm" />
+		<BlazorWebAssemblyLazyLoad Include="Aguacongas.TheIdServer.BlazorApp.Pages.Roles.wasm" />
+		<BlazorWebAssemblyLazyLoad Include="Aguacongas.TheIdServer.BlazorApp.Pages.Role.wasm" />
+		<BlazorWebAssemblyLazyLoad Include="Aguacongas.TheIdServer.BlazorApp.Pages.Users.wasm" />
+		<BlazorWebAssemblyLazyLoad Include="Aguacongas.TheIdServer.BlazorApp.Pages.User.wasm" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -92,7 +92,7 @@ namespace Microsoft.AspNetCore.Builder
                    if (configuration.GetValue<bool>("EnableOpenApiDoc"))
                    {
                        child.UseOpenApi()
-                           .UseSwaggerUi3(options =>
+                           .UseSwaggerUi(options =>
                            {
                                var settings = configuration.GetSection("SwaggerUiSettings").Get<NSwag.AspNetCore.SwaggerUiSettings>();
                                options.OAuth2Client = settings.OAuth2Client;
@@ -122,7 +122,7 @@ namespace Microsoft.AspNetCore.Builder
 
             if (!isProxy)
             {
-                app.UseIdentityServerAdminAuthentication(" /providerhub", JwtBearerDefaults.AuthenticationScheme);
+                app.UseIdentityServerAdminAuthentication("/providerhub");
             }
 
             app.UseAuthorization()
