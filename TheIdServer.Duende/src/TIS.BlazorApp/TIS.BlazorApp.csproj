@@ -30,8 +30,8 @@
 		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages.Roles" Version="8.0.0" />
 		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages.User" Version="8.0.0" />
 		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages.Users" Version="8.0.0" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.4" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.4" PrivateAssets="all" />		
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.5" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.5" PrivateAssets="all" />		
 	</ItemGroup>
 
 	<ItemGroup>
