@@ -33,27 +33,28 @@ namespace TIS.BlazorApp
             var path = args.Path.Split("/")[0];
             if (path == "protectresource")
             {
-                return LoadAssemblyAsync("Aguacongas.TheIdServer.BlazorApp.Pages.Api.dll");
+                return LoadAssemblyAsync("Aguacongas.TheIdServer.BlazorApp.Pages.Api.wasm");
             }
 
             if (path == "identityresource")
             {
-                return LoadAssemblyAsync("Aguacongas.TheIdServer.BlazorApp.Pages.Identity.dll");
+                return LoadAssemblyAsync("Aguacongas.TheIdServer.BlazorApp.Pages.Identity.wasm");
             }
 
             var pageKind = _pageKindList.FirstOrDefault(k => path == $"{k.ToLower()}s");
             if (pageKind != null)
             {
-                return LoadAssemblyAsync($"Aguacongas.TheIdServer.BlazorApp.Pages.{pageKind}s.dll");
+                return LoadAssemblyAsync($"Aguacongas.TheIdServer.BlazorApp.Pages.{pageKind}s.wasm");
             }
 
             pageKind = _pageKindList.FirstOrDefault(k => path == k.ToLower());
             if (pageKind != null)
             {
-                return LoadAssemblyAsync($"Aguacongas.TheIdServer.BlazorApp.Pages.{pageKind}.dll");
+                return LoadAssemblyAsync($"Aguacongas.TheIdServer.BlazorApp.Pages.{pageKind}.wasm");
             }
 
-            return Task.CompletedTask;
+            pageKind = _pageKindList.FirstOrDefault(k => path.Equals(k, StringComparison.InvariantCultureIgnoreCase));
+            return pageKind != null ? LoadAssemblyAsync($"Aguacongas.TheIdServer.BlazorApp.Pages.{pageKind}.wasm") : Task.CompletedTask;
         }
 
         private async Task LoadAssemblyAsync(string assemblyName)
