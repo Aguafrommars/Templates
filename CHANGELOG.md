@@ -1,3 +1,10 @@
+## [5.0.2](https://github.com/Aguafrommars/Templates/compare/5.0.1...5.0.2) (2024-09-15)
+
+
+### Bug Fixes
+
+* unhandled exception rendering component ([55f4513](https://github.com/Aguafrommars/Templates/commit/55f4513e9819c3042fbd2e2f849a2affcb9178e3)), closes [#315](https://github.com/Aguafrommars/Templates/issues/315)
+
 ## [5.0.1](https://github.com/Aguafrommars/Templates/compare/5.0.0...5.0.1) (2024-03-30)
 
 
