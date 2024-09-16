@@ -11,7 +11,7 @@ RUN dotnet build "TIS.BlazorApp.csproj" -c Release -o /app/build
 FROM build AS publish
 RUN dotnet publish "TIS.BlazorApp.csproj" -c Release -o /app/publish
 
-FROM nginx:1.25 AS final
+FROM nginx:1.26.2 AS final
 WORKDIR /usr/share/nginx/html
 COPY --from=publish /app/publish/wwwroot .
 COPY --from=build /src/src/TIS.BlazorApp/nginx.conf /etc/nginx/nginx.conf

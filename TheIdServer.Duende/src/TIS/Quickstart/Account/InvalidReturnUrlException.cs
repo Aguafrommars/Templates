@@ -27,6 +27,7 @@ namespace TIS.Quickstart.Account
         {
         }
 
+        [Obsolete]
         protected InvalidReturnUrlException(SerializationInfo serializationInfo, StreamingContext streamingContext)
             : base(serializationInfo, streamingContext)
         {
