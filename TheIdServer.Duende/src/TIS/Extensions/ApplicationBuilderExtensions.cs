@@ -8,7 +8,6 @@ using Aguacongas.TheIdServer.Authentication;
 using Aguacongas.TheIdServer.BlazorApp.Models;
 using Aguacongas.TheIdServer.Data;
 using Duende.IdentityServer.Hosting;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
@@ -89,26 +88,7 @@ namespace Microsoft.AspNetCore.Builder
                .UseStaticFiles()
                .UseIdentityServerAdminApi("/api", child =>
                {
-                   if (configuration.GetValue<bool>("EnableOpenApiDoc"))
-                   {
-                       child.UseOpenApi()
-                           .UseSwaggerUi(options =>
-                           {
-                               var settings = configuration.GetSection("SwaggerUiSettings").Get<NSwag.AspNetCore.SwaggerUiSettings>();
-                               options.OAuth2Client = settings.OAuth2Client;
-                           });
-                   }
-                   var allowedOrigin = configuration.GetSection("CorsAllowedOrigin").Get<IEnumerable<string>>();
-                   if (allowedOrigin != null)
-                   {
-                       child.UseCors(configure =>
-                       {
-                           configure.SetIsOriginAllowed(origin => allowedOrigin.Any(o => o == origin))
-                               .AllowAnyMethod()
-                               .AllowAnyHeader()
-                               .AllowCredentials();
-                       });
-                   }
+                   ConfigureAdminApiHandler(configuration, child);
                })
                 .UseRouting();
 
@@ -125,7 +105,8 @@ namespace Microsoft.AspNetCore.Builder
                 app.UseIdentityServerAdminAuthentication("/providerhub");
             }
 
-            app.UseAuthorization()
+            app.UseIdentityServerAdminAuthentication()
+                .UseAuthorization()
                 .Use((context, next) =>
                 {
                     var service = context.RequestServices;
@@ -155,6 +136,54 @@ namespace Microsoft.AspNetCore.Builder
                 .LoadDynamicAuthenticationConfiguration<SchemeDefinition>();
 
             return app;
+        }
+
+        private static void ConfigureAdminApiHandler(IConfiguration configuration, IApplicationBuilder child)
+        {
+            if (configuration.GetValue<bool>("EnableOpenApiDoc"))
+            {
+                ConfigureOpentApi(configuration, child);
+            }
+            var allowedOrigin = configuration.GetSection("CorsAllowedOrigin").Get<IEnumerable<string>>();
+            if (allowedOrigin is null)
+            {
+                return;
+            }
+
+            child.UseCors(configure =>
+            {
+                configure.SetIsOriginAllowed(origin => allowedOrigin.Any(o => o == origin))
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowCredentials();
+            });
+        }
+
+        private static void ConfigureOpentApi(IConfiguration configuration, IApplicationBuilder child)
+        {
+            child.UseOpenApi(
+                options =>
+                {
+                    var settings = configuration.GetSection("SwaggerUiSettings").Get<TIS.SwaggerUiSettings>();
+                    if (settings?.Path is not null)
+                    {
+                        var path = settings.Path;
+                        path = path.EndsWith('/') ? path : $"{path}/";
+                        options.Path = $"{settings.Path}{{documentName}}/swagger.json";
+                    }
+                })
+                .UseSwaggerUi(options =>
+                {
+                    var settings = configuration.GetSection("SwaggerUiSettings").Get<TIS.SwaggerUiSettings>();
+                    options.OAuth2Client = settings?.OAuth2Client;
+                    options.Path = settings?.Path;
+                    if (settings?.Path is not null)
+                    {
+                        var path = settings.Path;
+                        path = path.EndsWith('/') ? path : $"{path}/";
+                        options.DocumentPath = $"{settings.Path}{{documentName}}/swagger.json";
+                    }
+                });
         }
 
         private static void AddForceHttpsSchemeMiddleware(IApplicationBuilder app, IConfiguration configuration)
