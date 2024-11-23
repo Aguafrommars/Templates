@@ -12,12 +12,12 @@ image:
 environment:
   GH_TOKEN: 
     secure: /o9VAhx5ewGmdLR9qcgFJMzBaCuzOmGlsXAHu7khUJLdQzsv4gJzLUfYDghcRPHd
-  donetsdk: 8.0.202
+  donetsdk: 9.0.100
 init:
   - cmd: git config --global core.autocrlf true
 install:
   - ps: Install-Product node 20 x64
-  - ps: .\dotnet-install.ps1 -Version 5.0.404
+  - ps: .\dotnet-install.ps1 -Version 8.0.403
   - ps: dotnet tool install --global GitVersion.Tool
   - ps: dotnet gitversion /l console /output buildserver
   - ps: .\dotnet-install.ps1 -Version $env:donetsdk
