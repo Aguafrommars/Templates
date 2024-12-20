@@ -11,9 +11,9 @@
 	<ItemGroup>
 		<PackageReference Include="Aguacongas.DynamicConfiguration.Redis" Version="2.0.0" />
 		<PackageReference Include="Aguacongas.DynamicConfiguration.WebApi" Version="2.0.0" />
-		<PackageReference Include="AspNetCore.HealthChecks.MongoDb" Version="8.1.0" />
-		<PackageReference Include="AspNetCore.HealthChecks.RavenDb" Version="8.0.1" />
-		<PackageReference Include="AspNetCore.HealthChecks.Redis" Version="8.0.1" />
+		<PackageReference Include="AspNetCore.HealthChecks.MongoDb" Version="9.0.0" />
+		<PackageReference Include="AspNetCore.HealthChecks.RavenDb" Version="9.0.0" />
+		<PackageReference Include="AspNetCore.HealthChecks.Redis" Version="9.0.0" />
 		<PackageReference Include="Aguacongas.IdentityServer.Admin.Duende" Version="8.2.0" />
 		<PackageReference Include="Aguacongas.IdentityServer.EntityFramework.Store.Duende" Version="8.2.0" />
 		<PackageReference Include="Aguacongas.IdentityServer.MongoDb.Store.Duende" Version="8.2.0" />
