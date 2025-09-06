@@ -17,7 +17,7 @@ init:
   - cmd: git config --global core.autocrlf true
 install:
   - ps: Install-Product node 20 x64
-  - ps: .\dotnet-install.ps1 -Version 8.0.403
+  - ps: .\dotnet-install.ps1 -Version 8.0.413
   - ps: dotnet tool install --global GitVersion.Tool
   - ps: dotnet gitversion /l console /output buildserver
   - ps: .\dotnet-install.ps1 -Version $env:donetsdk
