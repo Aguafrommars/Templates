@@ -15,8 +15,9 @@ using Aguacongas.TheIdServer.BlazorApp.Models;
 using Aguacongas.TheIdServer.BlazorApp.Services;
 using Aguacongas.TheIdServer.Data;
 using Aguacongas.TheIdServer.Models;
+using Duende.AspNetCore.Authentication.OAuth2Introspection;
+using Duende.AspNetCore.Authentication.OAuth2Introspection.Infrastructure;
 using Duende.IdentityServer.Services;
-using IdentityModel.AspNetCore.OAuth2Introspection;
 using IdentityServerHost.Quickstart.UI;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -34,6 +35,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using MongoDB.Driver;
 using Newtonsoft.Json;
 using Raven.Client.Documents;
 using System;
@@ -423,7 +425,11 @@ namespace Microsoft.Extensions.DependencyInjection
                 switch (dbTypes)
                 {
                     case DbTypes.MongoDb:
-                        builder.AddMongoDb(configuration.GetConnectionString("DefaultConnection"), tags: tags);
+                        builder.AddMongoDb(p =>
+                        {
+                            var settings = MongoClientSettings.FromConnectionString(configuration.GetConnectionString("DefaultConnection"));
+                            return new MongoClient(settings);
+                        }, tags: tags);
                         break;
                     case DbTypes.RavenDb:
                         builder.AddRavenDB(options =>
@@ -433,7 +439,8 @@ namespace Microsoft.Extensions.DependencyInjection
                             var path = section.GetValue<string>(nameof(RavenDbOptions.CertificatePath));
                             if (!string.IsNullOrWhiteSpace(path))
                             {
-                                options.Certificate = new X509Certificate2(path, section.GetValue<string>(nameof(RavenDbOptions.CertificatePassword)));
+                                options.Certificate = X509CertificateLoader.LoadPkcs12FromFile(path, 
+                                    section.GetValue<string>(nameof(RavenDbOptions.CertificatePassword)));
                             }
                         }, tags: tags);
                         break;
