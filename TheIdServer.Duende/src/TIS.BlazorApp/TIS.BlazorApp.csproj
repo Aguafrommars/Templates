@@ -11,27 +11,27 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages" Version="9.1.1" />
-		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages.Api" Version="9.1.1" />
-		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages.Apis" Version="9.1.1" />
-		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages.ApiScope" Version="9.1.1" />
-		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages.ApiScopes" Version="9.1.1" />
-		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages.Client" Version="9.1.1" />
-		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages.Clients" Version="9.1.1" />
-		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages.Culture" Version="9.1.1" />
-		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages.Cultures" Version="9.1.1" />
-		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages.ExternalProvider" Version="9.1.1" />
-		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages.ExternalProviders" Version="9.1.1" />
-		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages.Identities" Version="9.1.1" />
-		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages.Identity" Version="9.1.1" />
-		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages.Import" Version="9.1.1" />
-		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages.Keys" Version="9.1.1" />
-		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages.Role" Version="9.1.1" />
-		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages.Roles" Version="9.1.1" />
-		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages.User" Version="9.1.1" />
-		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages.Users" Version="9.1.1" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.8" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="9.0.8" PrivateAssets="all" />		
+		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages" Version="9.1.2" />
+		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages.Api" Version="9.1.2" />
+		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages.Apis" Version="9.1.2" />
+		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages.ApiScope" Version="9.1.2" />
+		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages.ApiScopes" Version="9.1.2" />
+		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages.Client" Version="9.1.2" />
+		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages.Clients" Version="9.1.2" />
+		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages.Culture" Version="9.1.2" />
+		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages.Cultures" Version="9.1.2" />
+		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages.ExternalProvider" Version="9.1.2" />
+		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages.ExternalProviders" Version="9.1.2" />
+		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages.Identities" Version="9.1.2" />
+		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages.Identity" Version="9.1.2" />
+		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages.Import" Version="9.1.2" />
+		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages.Keys" Version="9.1.2" />
+		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages.Role" Version="9.1.2" />
+		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages.Roles" Version="9.1.2" />
+		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages.User" Version="9.1.2" />
+		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages.Users" Version="9.1.2" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.9" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="9.0.9" PrivateAssets="all" />		
 	</ItemGroup>
 
 	<ItemGroup>
