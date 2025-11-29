@@ -11,25 +11,25 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages" Version="10.0.0" />
-		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages.Api" Version="10.0.0" />
-		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages.Apis" Version="10.0.0" />
-		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages.ApiScope" Version="10.0.0" />
-		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages.ApiScopes" Version="10.0.0" />
-		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages.Client" Version="10.0.0" />
-		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages.Clients" Version="10.0.0" />
-		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages.Culture" Version="10.0.0" />
-		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages.Cultures" Version="10.0.0" />
-		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages.ExternalProvider" Version="10.0.0" />
-		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages.ExternalProviders" Version="10.0.0" />
-		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages.Identities" Version="10.0.0" />
-		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages.Identity" Version="10.0.0" />
-		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages.Import" Version="10.0.0" />
-		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages.Keys" Version="10.0.0" />
-		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages.Role" Version="10.0.0" />
-		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages.Roles" Version="10.0.0" />
-		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages.User" Version="10.0.0" />
-		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages.Users" Version="10.0.0" />
+		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages" Version="10.0.1" />
+		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages.Api" Version="10.0.1" />
+		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages.Apis" Version="10.0.1" />
+		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages.ApiScope" Version="10.0.1" />
+		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages.ApiScopes" Version="10.0.1" />
+		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages.Client" Version="10.0.1" />
+		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages.Clients" Version="10.0.1" />
+		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages.Culture" Version="10.0.1" />
+		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages.Cultures" Version="10.0.1" />
+		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages.ExternalProvider" Version="10.0.1" />
+		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages.ExternalProviders" Version="10.0.1" />
+		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages.Identities" Version="10.0.1" />
+		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages.Identity" Version="10.0.1" />
+		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages.Import" Version="10.0.1" />
+		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages.Keys" Version="10.0.1" />
+		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages.Role" Version="10.0.1" />
+		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages.Roles" Version="10.0.1" />
+		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages.User" Version="10.0.1" />
+		<PackageReference Include="Aguacongas.TheIdServer.BlazorApp.Pages.Users" Version="10.0.1" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.0" PrivateAssets="all" />		
 	</ItemGroup>
