@@ -3,11 +3,11 @@
   <PropertyGroup>
     <PackageType>Template</PackageType>
     <PackageVersion>1.0</PackageVersion>
-    <PackageId>TheIdServer.Duende.Template</PackageId>
-    <Title>TheIdServer Duende IdentityServer Template</Title>
+    <PackageId>FreeTheIdServer.IdentityServer.Template</PackageId>
+    <Title>FreeTheIdServer IdentityServer Template</Title>
     <Authors>Olivier Lefebvre</Authors>
-    <Description>Template to create a TheIdServer for Duende IdentityServer solution.</Description>
-    <PackageTags>dotnet-new;templates;theidserver;duende-identityserver;oidc;ws-federation;oauth;identity;authentication;security;iam</PackageTags>
+    <Description>Template to create a FreeTheIdServer for Open.IdentityServer solution.</Description>
+    <PackageTags>dotnet-new;templates;freetheidserver;duende-identityserver;oidc;ws-federation;oauth;identity;authentication;security;iam</PackageTags>
     <TargetFramework>net7.0</TargetFramework>
 
     <IncludeContentInPack>true</IncludeContentInPack>

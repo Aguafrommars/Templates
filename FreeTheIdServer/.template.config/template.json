@@ -1,10 +1,10 @@
 {
-  "$schema": "http://json.schemastore.org/TIS.Duende",
+  "$schema": "http://json.schemastore.org/TIS",
   "author": "Olivier Lefebvre",
-  "classifications": ["TheIdServer"],
-  "name": "TheIdServer.Duende",
-  "identity": "TheIdServer.Duende",
-  "shortName": "tisduende",
+  "classifications": ["FreeTheIdServer"],
+  "name": "FreeTheIdServer",
+  "identity": "FreeTheIdServer",
+  "shortName": "freetis",
   "tags": {
     "language": "C#"
   },

@@ -1,7 +1,8 @@
 # Templates
 dotnet new templates
 
-Create a [TheIdServer](https://github.com/Aguafrommars/TheIdServer) solutions with [`dotnet new`](https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-new) cli tool.
+* Create a [TheIdServer](https://github.com/Aguafrommars/TheIdServer) solutions with [`dotnet new`](https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-new) cli tool.
+* Create a [FreeTheIdServer](https://github.com/aguacongas/TheIdServer) solutions with [`dotnet new`](https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-new) cli tool.
 
 [![Build status](https://ci.appveyor.com/api/projects/status/27ytaa2e2pymg129?svg=true)](https://ci.appveyor.com/project/aguacongas/templates)
 
@@ -16,14 +17,30 @@ Nuget packages
 [TheIdServer.Duende.Template-downloadbadge]: https://img.shields.io/nuget/dt/TheIdServer.Duende.Template.svg
 [TheIdServer.Duende.Template-nuget]: https://www.nuget.org/packages/TheIdServer.Duende.Template/
 
+|FreeTheIdServer.Template|
+|:------:|
+|[![][FreeTheIdServer.Template-badge]][FreeTheIdServer.Template-nuget]|[![][TheIdServer.IS4.Template-badge]][TheIdServer.IS4.Template-nuget]|
+|[![][FreeTheIdServer.Template-downloadbadge]][FreeTheIdServer.Template-nuget]|
+
+[FreeTheIdServer.Template-badge]: https://img.shields.io/nuget/v/FreeTheIdServer.Template.svg
+[FreeTheIdServer.Template-downloadbadge]: https://img.shields.io/nuget/dt/FreeTheIdServer.Template.svg
+[FreeTheIdServer.Template-nuget]: https://www.nuget.org/packages/FreeTheIdServer.Template/
+
 ## Install
 
-To install the template to create a solution using Duende IdentityServer:
+To install the TheIdServer.Duende template to create a solution using Duende IdentityServer:
 ```bash
 dotnet new -i TheIdServer.Duende.Template
 ```
 
+To install the FreeTheIdServer template to create a solution using Open.IdentityServer:
+```bash
+dotnet new -i FreeTheIdServer.Template
+```
+
 ## Use
+
+### TheIdServer.Duende
 
 ```bash
 > dotnet new tisduende -o TheIdServer
@@ -54,5 +71,37 @@ TheIdServer
      ├─── Microsoft.AspNetCore.Components.Testing // Components testing utilities
      ├─── TheIdServer.IntegrationTest // Server integration tests
      ├─── TheIdServer.Test // Server tests
+     └─── WebAssembly.Net.Http // WASM test utilities
+```
+
+### FreeTheIdServer
+
+```bash
+> dotnet new freetis -o FreeTheIdServer
+The template "FreeTheIdServer" was created successfully.
+
+Processing post-creation actions...
+Running 'dotnet restore' on FreeTheIdServer\FreeTheIdServer.sln...
+  Determining projects to restore...
+  Restored C:\Projects\Perso\Templates\artifacts\FreeTheIdServer\test\WebAssembly.Net.Http\WebAssembly.Net.Http.csproj (in 114 ms).
+  Restored C:\Projects\Perso\Templates\artifacts\FreeTheIdServer\src\FreeTheIdServer.BlazorApp\FreeTheIdServer.BlazorApp.csproj (in 916 ms).
+  Restored C:\Projects\Perso\Templates\artifacts\FreeTheIdServer\test\Microsoft.AspNetCore.Components.Testing\Microsoft.AspNetCore.Components.Testing.csproj (in 1.08 sec).
+  Restored C:\Projects\Perso\Templates\artifacts\FreeTheIdServer\src\FreeTheIdServer\FreeTheIdServer.csproj (in 2.03 sec).
+  Restored C:\Projects\Perso\Templates\artifacts\FreeTheIdServer\test\FreeTheIdServer.Test\FreeTheIdServer.Test.csproj (in 2.04 sec).
+  Restored C:\Projects\Perso\Templates\artifacts\FreeTheIdServer\test\FreeTheIdServer.IntegrationTest\FreeTheIdServer.IntegrationTest.csproj (in 2.04 sec).
+Restore succeeded.
+```
+
+The above commande create a Visual Studio solution in *FreeTheIdServer* subfolder using Open.IdentityServer. 
+
+```cs
+FreeTheIdServer
+├─── src
+|    ├─── FreeTheIdServer // Server project
+|    └─── FreeTheIdServer.BlazorApp // Blazor application project
+└─── test
+     ├─── Microsoft.AspNetCore.Components.Testing // Components testing utilities
+     ├─── FreeTheIdServer.IntegrationTest // Server integration tests
+     ├─── FreeTheIdServer.Test // Server tests
      └─── WebAssembly.Net.Http // WASM test utilities
 ```
