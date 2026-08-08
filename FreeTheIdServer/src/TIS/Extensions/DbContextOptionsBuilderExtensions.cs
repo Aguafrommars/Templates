@@ -1,0 +1,38 @@
+﻿// Copyright (c) 2026 @Olivier Lefebvre. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+using Microsoft.Extensions.Configuration;
+using TIS.Models;
+
+namespace Microsoft.EntityFrameworkCore
+{
+    public static class DbContextOptionsBuilderExtensions
+    {
+        public static DbContextOptionsBuilder UseDatabaseFromConfiguration(this DbContextOptionsBuilder options, IConfiguration configuration)
+        {
+            var connectionString = configuration.GetConnectionString("DefaultConnection");
+            var dbType = configuration.GetValue<DbTypes>("DbType");
+            switch (dbType)
+            {
+                case DbTypes.InMemory:
+                    options.UseInMemoryDatabase(connectionString);
+                    break;
+                case DbTypes.SqlServer:
+                    options.UseSqlServer(connectionString, options => options.MigrationsAssembly("Aguacongas.FreeTheIdServer.Migrations.SqlServer"));
+                    break;
+                case DbTypes.Sqlite:
+                    options.UseSqlite(connectionString, options => options.MigrationsAssembly("Aguacongas.FreeTheIdServer.Migrations.Sqlite"));
+                    break;
+                case DbTypes.MySql:
+                    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString), options => options.MigrationsAssembly("Aguacongas.FreeTheIdServer.Migrations.MySql"));
+                    break;
+                case DbTypes.Oracle:
+                    options.UseOracle(connectionString, options => options.MigrationsAssembly("Aguacongas.FreeTheIdServer.Migrations.Oracle"));
+                    break;
+                case DbTypes.PostgreSQL:
+                    options.UseNpgsql(connectionString, options => options.MigrationsAssembly("Aguacongas.FreeTheIdServer.Migrations.PostgreSQL"));
+                    break;
+            }
+            return options;
+        }
+    }
+}

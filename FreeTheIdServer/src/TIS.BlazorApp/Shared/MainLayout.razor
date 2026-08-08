@@ -1,0 +1,27 @@
+﻿@inject Notifier _notifier;
+@inject IStringLocalizerAsync<MainLayout> Localizer
+
+@inherits LayoutComponentBase
+
+<div class="sidebar">
+    <NavMenu />
+</div>
+
+<div class="main mb-2">
+    <div class="nav top-row px-4 auth bg-body-secondary">
+        <EntityInfo />
+        <LoginDisplay />
+        <ThemeButton />
+    </div>
+    <div class="content px-4">
+        @if (IsClientSide)
+        {
+            @Body
+        }
+        else
+        {
+            <PageLoading Information="Loading..." />
+        }
+    </div>
+</div>
+<Toaster />

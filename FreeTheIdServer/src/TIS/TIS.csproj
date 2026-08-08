@@ -1,0 +1,59 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <UserSecretsId>a2e3792e-6123-4341-9e0b-d1f66608df10</UserSecretsId>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+        <DockerfileContext>..\..</DockerfileContext>
+    <EnablePreviewFeatures>True</EnablePreviewFeatures>
+    </PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Aguacongas.DynamicConfiguration.Redis" Version="3.1.0" />
+		<PackageReference Include="Aguacongas.DynamicConfiguration.WebApi" Version="3.1.0" />
+		<PackageReference Include="AspNetCore.HealthChecks.MongoDb" Version="9.0.0" />
+		<PackageReference Include="AspNetCore.HealthChecks.RavenDb" Version="9.0.0" />
+		<PackageReference Include="AspNetCore.HealthChecks.Redis" Version="9.0.0" />
+		<PackageReference Include="Aguacongas.Open.IdentityServer.Admin.Open" Version="1.0.0" />
+		<PackageReference Include="Aguacongas.Open.IdentityServer.EntityFramework.Store.Open" Version="1.0.0" />
+		<PackageReference Include="Aguacongas.Open.IdentityServer.MongoDb.Store.Open" Version="1.0.0" />
+		<PackageReference Include="Aguacongas.Open.IdentityServer.RavenDb.Store.Open" Version="1.0.0" />
+		<PackageReference Include="Aguacongas.Open.IdentityServer.Http.Store" Version="1.0.0" />
+		<PackageReference Include="Aguacongas.Open.IdentityServer.WsFederation.Open" Version="1.0.0" />
+		<PackageReference Include="Aguacongas.FreeTheIdServer.Authentication" Version="1.0.0" />
+		<PackageReference Include="Aguacongas.FreeTheIdServer.Identity" Version="1.0.0" />
+		<PackageReference Include="Aguacongas.FreeTheIdServer.Migrations.MySql" Version="1.0.0" />
+		<PackageReference Include="Aguacongas.FreeTheIdServer.Migrations.Oracle" Version="1.0.0" />
+		<PackageReference Include="Aguacongas.FreeTheIdServer.Migrations.PostgreSQL" Version="1.0.0" />
+		<PackageReference Include="Aguacongas.FreeTheIdServer.Migrations.Sqlite" Version="1.0.0" />
+		<PackageReference Include="Aguacongas.FreeTheIdServer.Migrations.SqlServer" Version="1.0.0" />
+		<PackageReference Include="Azure.Extensions.AspNetCore.DataProtection.Blobs" Version="1.5.3" />
+		<PackageReference Include="Azure.Extensions.AspNetCore.DataProtection.Keys" Version="1.6.3" />
+		<PackageReference Include="Azure.Identity" Version="1.21.0" />
+		<PackageReference Include="Duende.AspNetCore.Authentication.OAuth2Introspection" Version="7.0.1" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="10.0.10" />
+		<PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="10.0.10" />
+		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.10" />
+		<PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="10.0.10" />
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="10.0.10" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.0.10" />
+		<PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="10.0.10" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.10" />
+		<PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="10.0.10" />		
+		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.23.0" />
+		<PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="10.0.2" PrivateAssets="All" />
+		<PackageReference Include="SendGrid" Version="9.29.3" />
+		<PackageReference Include="Serilog" Version="4.4.0" />
+		<PackageReference Include="Serilog.AspNetCore" Version="10.0.0" />
+		<PackageReference Include="Serilog.Enrichers.Environment" Version="3.0.1" />
+		<PackageReference Include="Serilog.Enrichers.Thread" Version="4.0.0" />
+		<PackageReference Include="Serilog.Settings.Configuration" Version="10.0.1" />
+		<PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
+		<PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
+		<PackageReference Include="Serilog.Sinks.Seq" Version="9.1.0" />
+	</ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\TIS.BlazorApp\TIS.BlazorApp.csproj" />
+    </ItemGroup>
+</Project>

@@ -1,0 +1,28 @@
+﻿// Project: aguacongas/FreeTheIdServer
+// Copyright (c) 2026 @Olivier Lefebvre
+using Aguacongas.Open.IdentityServer.Admin.Services;
+using Aguacongas.Open.IdentityServer.Store;
+using Aguacongas.Open.IdentityServer.Store.Entity;
+using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption.ConfigurationModel;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace TIS.Services
+{
+    public class KeyStore<T1, T2> : IKeyStore<T1> where T2 : IAuthenticatedEncryptorDescriptor
+    {
+        private readonly KeyManagerWrapper<T2> _wrapper;
+
+        public KeyStore(KeyManagerWrapper<T2> wrapper)
+        {
+            _wrapper = wrapper ?? throw new ArgumentNullException(nameof(wrapper));
+        }
+
+        public Task<PageResponse<Key>> GetAllKeysAsync(CancellationToken cancellationToken = default)
+        => Task.FromResult(_wrapper.GetAllKeys());
+
+        public Task RevokeKeyAsync(string id, string reason, CancellationToken cancellationToken = default)
+        => throw new NotImplementedException();
+    }
+}
