@@ -17,14 +17,14 @@ Nuget packages
 [TheIdServer.Duende.Template-downloadbadge]: https://img.shields.io/nuget/dt/TheIdServer.Duende.Template.svg
 [TheIdServer.Duende.Template-nuget]: https://www.nuget.org/packages/TheIdServer.Duende.Template/
 
-|FreeTheIdServer.Template|
+|FreeTheIdServer.Open.Template|
 |:------:|
-|[![][FreeTheIdServer.Template-badge]][FreeTheIdServer.Template-nuget]|[![][TheIdServer.IS4.Template-badge]][TheIdServer.IS4.Template-nuget]|
-|[![][FreeTheIdServer.Template-downloadbadge]][FreeTheIdServer.Template-nuget]|
+|[![][FreeTheIdServer.Open.Template-badge]][FreeTheIdServer.Open.Template-nuget]|[![][TheIdServer.IS4.Template-badge]][TheIdServer.IS4.Template-nuget]|
+|[![][FreeTheIdServer.Open.Template-downloadbadge]][FreeTheIdServer.Open.Template-nuget]|
 
-[FreeTheIdServer.Template-badge]: https://img.shields.io/nuget/v/FreeTheIdServer.Template.svg
-[FreeTheIdServer.Template-downloadbadge]: https://img.shields.io/nuget/dt/FreeTheIdServer.Template.svg
-[FreeTheIdServer.Template-nuget]: https://www.nuget.org/packages/FreeTheIdServer.Template/
+[FreeTheIdServer.Open.Template-badge]: https://img.shields.io/nuget/v/FreeTheIdServer.Open.Template.svg
+[FreeTheIdServer.Open.Template-downloadbadge]: https://img.shields.io/nuget/dt/FreeTheIdServer.Open.Template.svg
+[FreeTheIdServer.Open.Template-nuget]: https://www.nuget.org/packages/FreeTheIdServer.Open.Template/
 
 ## Install
 
@@ -74,7 +74,7 @@ TheIdServer
      └─── WebAssembly.Net.Http // WASM test utilities
 ```
 
-### FreeTheIdServer
+### FreeTheIdServer.Open
 
 ```bash
 > dotnet new tisopen -o FreeTheIdServer
