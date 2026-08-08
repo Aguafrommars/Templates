@@ -2,9 +2,9 @@
   "$schema": "http://json.schemastore.org/TIS",
   "author": "Olivier Lefebvre",
   "classifications": ["FreeTheIdServer"],
-  "name": "FreeTheIdServer",
-  "identity": "FreeTheIdServer",
-  "shortName": "freetis",
+  "name": "FreeTheIdServer.Open",
+  "identity": "FreeTheIdServer.Open",
+  "shortName": "tisOpen",
   "tags": {
     "language": "C#"
   },

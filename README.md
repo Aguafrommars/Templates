@@ -35,7 +35,7 @@ dotnet new -i TheIdServer.Duende.Template
 
 To install the FreeTheIdServer template to create a solution using Open.IdentityServer:
 ```bash
-dotnet new -i FreeTheIdServer.Template
+dotnet new -i FreeTheIdServer.Open.Template
 ```
 
 ## Use
@@ -77,7 +77,7 @@ TheIdServer
 ### FreeTheIdServer
 
 ```bash
-> dotnet new freetis -o FreeTheIdServer
+> dotnet new tisopen -o FreeTheIdServer
 The template "FreeTheIdServer" was created successfully.
 
 Processing post-creation actions...

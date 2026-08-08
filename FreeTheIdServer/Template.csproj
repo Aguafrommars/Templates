@@ -3,7 +3,7 @@
   <PropertyGroup>
     <PackageType>Template</PackageType>
     <PackageVersion>1.0</PackageVersion>
-    <PackageId>FreeTheIdServer.IdentityServer.Template</PackageId>
+    <PackageId>FreeTheIdServer.Open.Template</PackageId>
     <Title>FreeTheIdServer IdentityServer Template</Title>
     <Authors>Olivier Lefebvre</Authors>
     <Description>Template to create a FreeTheIdServer for Open.IdentityServer solution.</Description>
