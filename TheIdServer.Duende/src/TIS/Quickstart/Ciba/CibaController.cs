@@ -38,7 +38,7 @@ namespace IdentityServerHost.Quickstart.UI.Ciba
         [HttpGet]
         public async Task<IActionResult> Consent(string id)
         {
-            var request = await _interaction.GetLoginRequestByInternalIdAsync(id);
+            var request = await _interaction.GetLoginRequestByInternalIdAsync(id, HttpContext.RequestAborted);
             var model = BuildViewModelAsync(request, id);
 
             return View(model);
@@ -48,7 +48,7 @@ namespace IdentityServerHost.Quickstart.UI.Ciba
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Consent([FromForm] InputModel input)
         {
-            var request = await _interaction.GetLoginRequestByInternalIdAsync(input.Id);
+            var request = await _interaction.GetLoginRequestByInternalIdAsync(input.Id, HttpContext.RequestAborted);
             var viewModel = BuildViewModelAsync(request, input.Id, input);
 
             CompleteBackchannelLoginRequest result = null;
@@ -59,7 +59,7 @@ namespace IdentityServerHost.Quickstart.UI.Ciba
                 result = new CompleteBackchannelLoginRequest(input.Id);
 
                 // emit event
-                await _events.RaiseAsync(new ConsentDeniedEvent(User.GetSubjectId(), request.Client.ClientId, request.ValidatedResources.RawScopeValues))
+                await _events.RaiseAsync(new ConsentDeniedEvent(User.GetSubjectId(), request.Client.ClientId, request.ValidatedResources.RawScopeValues), HttpContext.RequestAborted)
                     .ConfigureAwait(false);
             }
             // user clicked 'yes' - validate the data
@@ -81,7 +81,7 @@ namespace IdentityServerHost.Quickstart.UI.Ciba
                     };
 
                     // emit event
-                    await _events.RaiseAsync(new ConsentGrantedEvent(User.GetSubjectId(), request.Client.ClientId, request.ValidatedResources.RawScopeValues, result.ScopesValuesConsented, false))
+                    await _events.RaiseAsync(new ConsentGrantedEvent(User.GetSubjectId(), request.Client.ClientId, request.ValidatedResources.RawScopeValues, result.ScopesValuesConsented, false), HttpContext.RequestAborted)
                         .ConfigureAwait(false); ;
                 }
                 else
@@ -97,7 +97,7 @@ namespace IdentityServerHost.Quickstart.UI.Ciba
             if (result != null)
             {
                 // communicate outcome of consent back to identityserver
-                await _interaction.CompleteLoginRequestAsync(result);                
+                await _interaction.CompleteLoginRequestAsync(result, HttpContext.RequestAborted);
                 return RedirectToPage("/Account/Manage/Ciba", new { area = "Identity" });
             }
 
@@ -117,7 +117,7 @@ namespace IdentityServerHost.Quickstart.UI.Ciba
             throw new InvalidOperationException(_localizer["SubjectIds don't match."]);
         }
 
-        private ViewModel CreateConsentViewModel(InputModel model, 
+        private ViewModel CreateConsentViewModel(InputModel model,
             string id,
             BackchannelUserLoginRequest request)
         {
@@ -197,7 +197,7 @@ namespace IdentityServerHost.Quickstart.UI.Ciba
             Checked = check || identity.Required
         };
 
-        private static ScopeViewModel GetOfflineAccessScope(bool check) 
+        private static ScopeViewModel GetOfflineAccessScope(bool check)
         => new()
         {
             Value = StandardScopes.OfflineAccess,
@@ -206,6 +206,6 @@ namespace IdentityServerHost.Quickstart.UI.Ciba
             Emphasize = true,
             Checked = check
         };
-        
+
     }
 }
