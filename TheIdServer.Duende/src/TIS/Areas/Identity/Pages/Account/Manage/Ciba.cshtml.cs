@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 
 namespace TIS.Areas.Identity.Pages.Account.Manage
-{ 
+{
     public class CibaModel : PageModel
     {
         public IEnumerable<BackchannelUserLoginRequest> Logins { get; set; }
@@ -26,7 +26,7 @@ namespace TIS.Areas.Identity.Pages.Account.Manage
 
         public async Task OnGet()
         {
-            Logins = await _backchannelAuthenticationInteraction.GetPendingLoginRequestsForCurrentUserAsync();
+            Logins = await _backchannelAuthenticationInteraction.GetPendingLoginRequestsForCurrentUserAsync(HttpContext.RequestAborted);
         }
     }
 }

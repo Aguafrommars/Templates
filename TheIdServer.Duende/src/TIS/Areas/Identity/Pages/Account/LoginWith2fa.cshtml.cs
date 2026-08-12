@@ -122,9 +122,9 @@ namespace TIS.Areas.Identity.Pages.Account
 
         private async Task<IActionResult> OnSiginSuccesss(ApplicationUser user, string returnUrl)
         {
-            var context = await _interaction.GetAuthorizationContextAsync(returnUrl).ConfigureAwait(false);
+            var context = await _interaction.GetAuthorizationContextAsync(returnUrl, HttpContext.RequestAborted).ConfigureAwait(false);
 
-            await _events.RaiseAsync(new UserLoginSuccessEvent(user.UserName, user.Id, user.UserName, clientId: context?.Client?.ClientId));
+            await _events.RaiseAsync(new UserLoginSuccessEvent(user.UserName, user.Id, user.UserName, clientId: context?.Client?.ClientId), HttpContext.RequestAborted);
 
             if (context != null)
             {

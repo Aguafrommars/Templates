@@ -35,8 +35,13 @@ jobs:
         with: 
           dotnet-version: 10.0.x
       # Run update Duende depencies script
-      - name: Update Duende dependencies
+      - name: Update Duende dependencies Duende
         working-directory: TheIdServer.Duende
+        run: ./update-dependencies.ps1
+        env: 	
+          GITHUB_TOKEN: ${{ secrets.PAT }}
+      - name: Update Duende dependencies FreeTheIdServer
+        working-directory: FreeTheIdServer
         run: ./update-dependencies.ps1
         env: 	
           GITHUB_TOKEN: ${{ secrets.PAT }}

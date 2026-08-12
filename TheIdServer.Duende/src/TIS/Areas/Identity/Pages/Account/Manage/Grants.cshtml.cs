@@ -41,23 +41,23 @@ namespace TIS.Areas.Identity.Pages.Account.Manage
 
         public async Task<IActionResult> OnPostRevokeAsync(string clientId)
         {
-            await _interaction.RevokeUserConsentAsync(clientId);
-            await _events.RaiseAsync(new GrantsRevokedEvent(User.GetSubjectId(), clientId));
+            await _interaction.RevokeUserConsentAsync(clientId, HttpContext.RequestAborted);
+            await _events.RaiseAsync(new GrantsRevokedEvent(User.GetSubjectId(), clientId), HttpContext.RequestAborted);
 
             return RedirectToPage();
         }
 
         private async Task BuildViewModelAsync()
         {
-            var grants = await _interaction.GetAllUserGrantsAsync();
+            var grants = await _interaction.GetAllUserGrantsAsync(HttpContext.RequestAborted);
 
             var list = new List<GrantViewModel>();
             foreach (var grant in grants)
             {
-                var client = await _clients.FindClientByIdAsync(grant.ClientId);
+                var client = await _clients.FindClientByIdAsync(grant.ClientId, HttpContext.RequestAborted);
                 if (client != null)
                 {
-                    var resources = await _resources.FindResourcesByScopeAsync(grant.Scopes);
+                    var resources = await _resources.FindResourcesByScopeAsync(grant.Scopes, HttpContext.RequestAborted);
 
                     var item = new GrantViewModel()
                     {
