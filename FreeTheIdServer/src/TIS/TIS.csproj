@@ -27,8 +27,8 @@
 		<PackageReference Include="Aguacongas.FreeTheIdServer.Migrations.PostgreSQL" Version="1.0.0" />
 		<PackageReference Include="Aguacongas.FreeTheIdServer.Migrations.Sqlite" Version="1.0.0" />
 		<PackageReference Include="Aguacongas.FreeTheIdServer.Migrations.SqlServer" Version="1.0.0" />
-		<PackageReference Include="Azure.Extensions.AspNetCore.DataProtection.Blobs" Version="1.5.3" />
-		<PackageReference Include="Azure.Extensions.AspNetCore.DataProtection.Keys" Version="1.6.3" />
+		<PackageReference Include="Azure.Extensions.AspNetCore.DataProtection.Blobs" Version="1.5.4" />
+		<PackageReference Include="Azure.Extensions.AspNetCore.DataProtection.Keys" Version="1.6.4" />
 		<PackageReference Include="Azure.Identity" Version="1.21.0" />
 		<PackageReference Include="Duende.AspNetCore.Authentication.OAuth2Introspection" Version="7.0.1" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="10.0.11" />
